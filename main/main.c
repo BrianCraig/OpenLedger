@@ -968,7 +968,6 @@ void ST7789(void *pvParameters)
 	while (1)
 	{
 
-		char file[32];
 		FillTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
 		WAIT;
 
