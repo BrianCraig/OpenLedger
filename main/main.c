@@ -456,13 +456,28 @@ TickType_t RoundRectTest(TFT_t *dev, int width, int height)
 	return diffTick;
 }
 
+TickType_t RectRectTest(TFT_t *dev, int width, int height)
+{
+	TickType_t startTick, endTick, diffTick;
+	startTick = xTaskGetTickCount();
+
+	lcdFillScreen(dev, BLACK);
+	lcdDrawRect(dev, -1, -1, width, height, RED);
+	lcdDrawRect(dev, 0, 0, width - 1, height - 1, BLUE);
+
+	endTick = xTaskGetTickCount();
+	diffTick = endTick - startTick;
+	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d", diffTick * portTICK_RATE_MS);
+	return diffTick;
+}
+
 TickType_t FillRectTest(TFT_t *dev, int width, int height)
 {
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
 	uint16_t color;
-	lcdFillScreen(dev, CYAN);
+	lcdFillScreen(dev, BLACK);
 
 	uint16_t red;
 	uint16_t green;
@@ -953,79 +968,14 @@ void ST7789(void *pvParameters)
 	while (1)
 	{
 
+		char file[32];
 		FillTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
 		WAIT;
 
-		ColorBarTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		ArrowTest(&dev, fx16G, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		LineTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		CircleTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
+		RectRectTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
+		vTaskDelay(INTERVAL * 6);
 
 		RoundRectTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		RectAngleTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		TriangleTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		if (CONFIG_WIDTH >= 240)
-		{
-			DirectionTest(&dev, fx24G, CONFIG_WIDTH, CONFIG_HEIGHT);
-		}
-		else
-		{
-			DirectionTest(&dev, fx16G, CONFIG_WIDTH, CONFIG_HEIGHT);
-		}
-		WAIT;
-
-		if (CONFIG_WIDTH >= 240)
-		{
-			HorizontalTest(&dev, fx24G, CONFIG_WIDTH, CONFIG_HEIGHT);
-		}
-		else
-		{
-			HorizontalTest(&dev, fx16G, CONFIG_WIDTH, CONFIG_HEIGHT);
-		}
-		WAIT;
-
-		if (CONFIG_WIDTH >= 240)
-		{
-			VerticalTest(&dev, fx24G, CONFIG_WIDTH, CONFIG_HEIGHT);
-		}
-		else
-		{
-			VerticalTest(&dev, fx16G, CONFIG_WIDTH, CONFIG_HEIGHT);
-		}
-		WAIT;
-
-		FillRectTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		ColorTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		char file[32];
-		strcpy(file, "/spiffs/image.bmp");
-		BMPTest(&dev, file, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-#ifdef CONFIG_IDF_TARGET_ESP32
-		strcpy(file, "/spiffs/esp32.jpeg");
-		JPEGTest(&dev, file, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-#endif
-
-		strcpy(file, "/spiffs/esp_logo.png");
-		PNGTest(&dev, file, CONFIG_WIDTH, CONFIG_HEIGHT);
 		WAIT;
 
 		// Multi Font Test
@@ -1057,15 +1007,19 @@ void ST7789(void *pvParameters)
 
 		xpos = xpos - (32 * xd) - (margin * xd);
 		ypos = ypos + (24 * yd) + (margin * yd);
-		if (CONFIG_WIDTH >= 240)
-		{
-			strcpy((char *)ascii, "32Dot Gothic Font");
-			lcdDrawString(&dev, fx32G, xpos, ypos, ascii, color);
-			xpos = xpos - (32 * xd) - (margin * xd);
-			;
-			ypos = ypos + (32 * yd) + (margin * yd);
-		}
 
+		strcpy((char *)ascii, "32Dot Gothic Font");
+		lcdDrawString(&dev, fx32G, xpos, ypos, ascii, color);
+		xpos = xpos - (32 * xd) - (margin * xd);
+		ypos = ypos + (32 * yd) + (margin * yd);
+
+		vTaskDelay(INTERVAL * 6);
+
+		xpos = (CONFIG_WIDTH - 1) - 16;
+		ypos = 0;
+		xd = 1;
+		yd = 0;
+		lcdFillScreen(&dev, BLACK);
 		xpos = xpos - (10 * xd) - (margin * xd);
 		ypos = ypos + (10 * yd) + (margin * yd);
 		strcpy((char *)ascii, "16Dot Mincyo Font");
