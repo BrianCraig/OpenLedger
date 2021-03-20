@@ -9,17 +9,29 @@
 #include "esp_system.h"
 #include "esp_vfs.h"
 #include "esp_spiffs.h"
+#include "esp32/rom/uart.h"
 
 #include "st7789.h"
 #include "fontx.h"
 #include "bmpfile.h"
 #include "pngle.h"
-#include "decode_image.h"
-
-#define INTERVAL 400
-#define WAIT vTaskDelay(INTERVAL)
-
 static const char *TAG = "ST7789";
+
+void readFromUART()
+{
+	uint8_t myChar;
+	STATUS s = uart_rx_one_char(&myChar);
+	if (s == OK)
+	{
+		ESP_LOGI(TAG, "FOUND SMT");
+		printf("%c\n", myChar);
+	}
+}
+
+#define INTERVAL 4
+#define WAIT            \
+	vTaskDelay(INTERVAL); \
+	readFromUART()
 
 static void SPIFFS_Directory(char *path)
 {
@@ -682,74 +694,6 @@ TickType_t BMPTest(TFT_t *dev, char *file, int width, int height)
 	return diffTick;
 }
 
-TickType_t JPEGTest(TFT_t *dev, char *file, int width, int height)
-{
-	TickType_t startTick, endTick, diffTick;
-	startTick = xTaskGetTickCount();
-
-	lcdSetFontDirection(dev, 0);
-	lcdFillScreen(dev, BLACK);
-
-	pixel_s **pixels;
-	uint16_t imageWidth;
-	uint16_t imageHeight;
-	esp_err_t err = decode_image(&pixels, file, width, height, &imageWidth, &imageHeight);
-	ESP_LOGI(__FUNCTION__, "decode_image err=%d imageWidth=%d imageHeight=%d", err, imageWidth, imageHeight);
-	if (err == ESP_OK)
-	{
-
-		uint16_t _width = width;
-		uint16_t _cols = 0;
-		if (width > imageWidth)
-		{
-			_width = imageWidth;
-			_cols = (width - imageWidth) / 2;
-		}
-		ESP_LOGD(__FUNCTION__, "_width=%d _cols=%d", _width, _cols);
-
-		uint16_t _height = height;
-		uint16_t _rows = 0;
-		if (height > imageHeight)
-		{
-			_height = imageHeight;
-			_rows = (height - imageHeight) / 2;
-		}
-		ESP_LOGD(__FUNCTION__, "_height=%d _rows=%d", _height, _rows);
-		uint16_t *colors = (uint16_t *)malloc(sizeof(uint16_t) * _width);
-
-#if 0
-		for(int y = 0; y < _height; y++){
-			for(int x = 0;x < _width; x++){
-				pixel_s pixel = pixels[y][x];
-				uint16_t color = rgb565_conv(pixel.red, pixel.green, pixel.blue);
-				lcdDrawPixel(dev, x+_cols, y+_rows, color);
-			}
-			vTaskDelay(1);
-		}
-#endif
-
-		for (int y = 0; y < _height; y++)
-		{
-			for (int x = 0; x < _width; x++)
-			{
-				pixel_s pixel = pixels[y][x];
-				colors[x] = rgb565_conv(pixel.red, pixel.green, pixel.blue);
-			}
-			lcdDrawMultiPixels(dev, _cols, y + _rows, _width, colors);
-			vTaskDelay(1);
-		}
-
-		free(colors);
-		release_image(&pixels, width, height);
-		ESP_LOGD(__FUNCTION__, "Finish");
-	}
-
-	endTick = xTaskGetTickCount();
-	diffTick = endTick - startTick;
-	ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d", diffTick * portTICK_RATE_MS);
-	return diffTick;
-}
-
 void png_init(pngle_t *pngle, uint32_t w, uint32_t h)
 {
 	ESP_LOGD(__FUNCTION__, "png_init w=%d h=%d", w, h);
@@ -1011,8 +955,6 @@ void ST7789(void *pvParameters)
 		lcdDrawString(&dev, fx32G, xpos, ypos, ascii, color);
 		xpos = xpos - (32 * xd) - (margin * xd);
 		ypos = ypos + (32 * yd) + (margin * yd);
-
-		vTaskDelay(INTERVAL * 6);
 
 		xpos = (CONFIG_WIDTH - 1) - 16;
 		ypos = 0;

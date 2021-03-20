@@ -1,16 +1,5 @@
-set(srcs "main.c"
-    "st7789.c"
-    "fontx.c"
-    "pngle.c"
-    )
-
-# Only ESP32 has enough memory to do jpeg decoding
-if(IDF_TARGET STREQUAL "esp32")
-    list(APPEND srcs "decode_image.c")
-endif()
-
-idf_component_register(SRCS ${srcs}
-                    INCLUDE_DIRS ".")
+set(srcs main.c)
+idf_component_register(SRCS ${srcs} INCLUDE_DIRS ".")
 
 
 # Create a SPIFFS image from the contents of the 'font' directory

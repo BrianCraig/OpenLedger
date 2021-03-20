@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"uart.h": "c",
+			"gpio.h": "c"
+		}
+	}
+}
