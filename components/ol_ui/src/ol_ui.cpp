@@ -25,11 +25,25 @@ OlMenuEntry::~OlMenuEntry()
 OlMenuEntry *exampleOlMenu()
 {
   OlMenuEntry *base = new OlMenuEntry(new std::string("Base"));
-  base->addEntry(new OlMenuEntry(new std::string("Empty entry")));
-  OlMenuEntry *baseWithTwo = new OlMenuEntry(new std::string("TwoEntry"));
-  baseWithTwo->addEntry(new OlMenuEntry(new std::string((const char *)&"menu1")));
-  baseWithTwo->addEntry(new OlMenuEntry(new std::string("menu2")));
-  base->addEntry(baseWithTwo);
+
+  OlMenuEntry *account = new OlMenuEntry(new std::string("Account"));
+  OlMenuEntry *history = new OlMenuEntry(new std::string("History"));
+  OlMenuEntry *settings = new OlMenuEntry(new std::string("Settings"));
+
+  base->addEntry(account);
+  base->addEntry(history);
+  base->addEntry(settings);
+
+  OlMenuEntry *account_list = new OlMenuEntry(new std::string("List"));
+  OlMenuEntry *account_add = new OlMenuEntry(new std::string("Add"));
+  OlMenuEntry *account_info = new OlMenuEntry(new std::string("Info"));
+  OlMenuEntry *account_contacts = new OlMenuEntry(new std::string("Contacts"));
+
+  account->addEntry(account_list);
+  account->addEntry(account_add);
+  account->addEntry(account_info);
+  account->addEntry(account_contacts);
+
   return base;
 }
 
@@ -38,7 +52,7 @@ OlMenu::OlMenu(TFT_t *dev, FontxFile *font, OlMenuEntry *menu)
   this->dev = dev;
   this->font = font;
   this->menu = menu;
-  this->selected = menu->entries.front();
+  this->selectedIt = menu->entries.begin();
   path.push_back(menu);
   draw();
 }
@@ -47,26 +61,26 @@ void OlMenu::apply(enum UserAction action)
 {
   if (action == UserAction::Up)
   {
-    selected = path.back()->entries.front();
+    if (selectedIt != path.back()->entries.begin())
+      std::advance(selectedIt, -1);
   }
   else if (action == UserAction::Down)
   {
-    auto l_front = path.back()->entries.begin();
-    std::advance(l_front, 1);
-    selected = *l_front;
+    if (*selectedIt != path.back()->entries.back())
+      std::advance(selectedIt, 1);
   }
   else if (action == UserAction::No)
   {
     if (path.size() > 1)
     {
       path.pop_back();
-      selected = path.back()->entries.front();
+      selectedIt = path.back()->entries.begin();
     }
   }
   else if (action == UserAction::Yes)
   {
-    path.push_back(selected);
-    selected = selected->entries.front();
+    path.push_back(*selectedIt);
+    selectedIt = (*selectedIt)->entries.begin();
   }
   draw();
 }
@@ -77,7 +91,7 @@ void OlMenu::draw()
   int y = 20;
   for (OlMenuEntry *entry : path.back()->entries)
   {
-    lcdDrawFillCircle(dev, 20, y, 10, selected == entry ? RED : GREEN);
+    lcdDrawFillCircle(dev, 20, y, 10, *selectedIt == entry ? RED : GREEN);
     lcdDrawString(dev, font, 40, y + 12, (uint8_t *)entry->title->c_str(), WHITE);
     y += 30;
   }

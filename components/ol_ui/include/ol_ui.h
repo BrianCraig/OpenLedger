@@ -39,8 +39,8 @@ private:
   TFT_t *dev;
   FontxFile *font;
   OlMenuEntry *menu;
-  OlMenuEntry *selected;
   std::list<OlMenuEntry *> path;
+  std::list<OlMenuEntry *>::iterator selectedIt;
   void draw();
 
 public:
