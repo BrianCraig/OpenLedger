@@ -1,6 +1,5 @@
 #include <string>
 #include <list>
-
 #include "st7789.h"
 #include "ol_ui.h"
 
@@ -28,15 +27,16 @@ OlMenuEntry *exampleOlMenu()
   OlMenuEntry *base = new OlMenuEntry(new std::string("Base"));
   base->addEntry(new OlMenuEntry(new std::string("Empty entry")));
   OlMenuEntry *baseWithTwo = new OlMenuEntry(new std::string("TwoEntry"));
-  baseWithTwo->addEntry(new OlMenuEntry(new std::string("menu1")));
+  baseWithTwo->addEntry(new OlMenuEntry(new std::string((const char *)&"menu1")));
   baseWithTwo->addEntry(new OlMenuEntry(new std::string("menu2")));
   base->addEntry(baseWithTwo);
   return base;
 }
 
-OlMenu::OlMenu(TFT_t *dev, OlMenuEntry *menu)
+OlMenu::OlMenu(TFT_t *dev, FontxFile *font, OlMenuEntry *menu)
 {
   this->dev = dev;
+  this->font = font;
   this->menu = menu;
   this->selected = menu->entries.front();
   path.push_back(menu);
@@ -77,8 +77,9 @@ void OlMenu::draw()
   int y = 20;
   for (OlMenuEntry *entry : path.back()->entries)
   {
+    lcdDrawFillCircle(dev, 20, y, 10, selected == entry ? RED : GREEN);
+    lcdDrawString(dev, font, 40, y + 12, (uint8_t *)entry->title->c_str(), WHITE);
     y += 30;
-    lcdDrawFillCircle(dev, 30, y, 10, selected == entry ? RED : GREEN);
   }
 }
 

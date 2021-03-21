@@ -38,7 +38,10 @@ extern "C"
     TFT_t dev;
     spi_master_init(&dev);
     lcdInit(&dev);
-    OlMenu *menu = new OlMenu(&dev, exampleOlMenu());
+    FontxFile font;
+    InitFontx(&font, "/spiffs/ILGH24XB.FNT");
+    lcdSetFontDirection(&dev, 0);
+    OlMenu *menu = new OlMenu(&dev, &font, exampleOlMenu());
     for (;;)
     {
       menu->apply(getAction());

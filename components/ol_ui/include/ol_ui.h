@@ -37,13 +37,14 @@ class OlMenu
 {
 private:
   TFT_t *dev;
+  FontxFile *font;
   OlMenuEntry *menu;
   OlMenuEntry *selected;
   std::list<OlMenuEntry *> path;
   void draw();
 
 public:
-  OlMenu(TFT_t *dev, OlMenuEntry *menu);
+  OlMenu(TFT_t *dev, FontxFile *font, OlMenuEntry *menu);
   ~OlMenu();
   void apply(enum UserAction action);
 };
