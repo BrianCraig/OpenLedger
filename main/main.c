@@ -15,23 +15,11 @@
 #include "fontx.h"
 #include "bmpfile.h"
 #include "pngle.h"
+#include "app.h"
 static const char *TAG = "ST7789";
 
-void readFromUART()
-{
-	uint8_t myChar;
-	STATUS s = uart_rx_one_char(&myChar);
-	if (s == OK)
-	{
-		ESP_LOGI(TAG, "FOUND SMT");
-		printf("%c\n", myChar);
-	}
-}
-
 #define INTERVAL 4
-#define WAIT            \
-	vTaskDelay(INTERVAL); \
-	readFromUART()
+#define WAIT vTaskDelay(INTERVAL)
 
 static void SPIFFS_Directory(char *path)
 {
@@ -46,18 +34,6 @@ static void SPIFFS_Directory(char *path)
 	}
 	closedir(dir);
 }
-
-// You have to set these CONFIG value using menuconfig.
-#if 0
-#define CONFIG_WIDTH 240
-#define CONFIG_HEIGHT 240
-#define CONFIG_MOSI_GPIO 23
-#define CONFIG_SCLK_GPIO 18
-#define CONFIG_CS_GPIO -1
-#define CONFIG_DC_GPIO 19
-#define CONFIG_RESET_GPIO 15
-#define CONFIG_BL_GPIO -1
-#endif
 
 TickType_t FillTest(TFT_t *dev, int width, int height)
 {
@@ -861,135 +837,7 @@ TickType_t PNGTest(TFT_t *dev, char *file, int width, int height)
 
 void ST7789(void *pvParameters)
 {
-	// set font file
-	FontxFile fx16G[2];
-	FontxFile fx24G[2];
-	FontxFile fx32G[2];
-	InitFontx(fx16G, "/spiffs/ILGH16XB.FNT", ""); // 8x16Dot Gothic
-	InitFontx(fx24G, "/spiffs/ILGH24XB.FNT", ""); // 12x24Dot Gothic
-	InitFontx(fx32G, "/spiffs/ILGH32XB.FNT", ""); // 16x32Dot Gothic
-
-	FontxFile fx16M[2];
-	FontxFile fx24M[2];
-	FontxFile fx32M[2];
-	InitFontx(fx16M, "/spiffs/ILMH16XB.FNT", ""); // 8x16Dot Mincyo
-	InitFontx(fx24M, "/spiffs/ILMH24XB.FNT", ""); // 12x24Dot Mincyo
-	InitFontx(fx32M, "/spiffs/ILMH32XB.FNT", ""); // 16x32Dot Mincyo
-
-	TFT_t dev;
-	spi_master_init(&dev, CONFIG_MOSI_GPIO, CONFIG_SCLK_GPIO, CONFIG_CS_GPIO, CONFIG_DC_GPIO, CONFIG_RESET_GPIO, CONFIG_BL_GPIO);
-	lcdInit(&dev, CONFIG_WIDTH, CONFIG_HEIGHT, CONFIG_OFFSETX, CONFIG_OFFSETY);
-
-#if CONFIG_INVERSION
-	ESP_LOGI(TAG, "Enable Display Inversion");
-	lcdInversionOn(&dev);
-#endif
-
-#if 0
-	while (1) {
-		char file[32];
-		strcpy(file, "/spiffs/image.bmp");
-		BMPTest(&dev, file, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		strcpy(file, "/spiffs/esp32.jpeg");
-		JPEGTest(&dev, file, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		strcpy(file, "/spiffs/esp_logo.png");
-		PNGTest(&dev, file, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-	}
-#endif
-
-#if 0
-	//for TEST
-	lcdDrawFillRect(&dev, 0, 0, 10, 10, RED);
-	lcdDrawFillRect(&dev, 10, 10, 20, 20, GREEN);
-	lcdDrawFillRect(&dev, 20, 20, 30, 30, BLUE);
-#endif
-
-	while (1)
-	{
-
-		FillTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		RectRectTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-		vTaskDelay(INTERVAL * 6);
-
-		RoundRectTest(&dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-		WAIT;
-
-		// Multi Font Test
-		uint16_t color;
-		uint8_t ascii[40];
-		uint16_t margin = 10;
-		lcdFillScreen(&dev, BLACK);
-		color = WHITE;
-		lcdSetFontDirection(&dev, 0);
-		uint16_t xpos = 0;
-		uint16_t ypos = 15;
-		int xd = 0;
-		int yd = 1;
-		if (CONFIG_WIDTH < CONFIG_HEIGHT)
-		{
-			lcdSetFontDirection(&dev, 1);
-			xpos = (CONFIG_WIDTH - 1) - 16;
-			ypos = 0;
-			xd = 1;
-			yd = 0;
-		}
-		strcpy((char *)ascii, "16Dot Gothic Font");
-		lcdDrawString(&dev, fx16G, xpos, ypos, ascii, color);
-
-		xpos = xpos - (24 * xd) - (margin * xd);
-		ypos = ypos + (16 * yd) + (margin * yd);
-		strcpy((char *)ascii, "24Dot Gothic Font");
-		lcdDrawString(&dev, fx24G, xpos, ypos, ascii, color);
-
-		xpos = xpos - (32 * xd) - (margin * xd);
-		ypos = ypos + (24 * yd) + (margin * yd);
-
-		strcpy((char *)ascii, "32Dot Gothic Font");
-		lcdDrawString(&dev, fx32G, xpos, ypos, ascii, color);
-		xpos = xpos - (32 * xd) - (margin * xd);
-		ypos = ypos + (32 * yd) + (margin * yd);
-
-		xpos = (CONFIG_WIDTH - 1) - 16;
-		ypos = 0;
-		xd = 1;
-		yd = 0;
-		lcdFillScreen(&dev, BLACK);
-		xpos = xpos - (10 * xd) - (margin * xd);
-		ypos = ypos + (10 * yd) + (margin * yd);
-		strcpy((char *)ascii, "16Dot Mincyo Font");
-		lcdDrawString(&dev, fx16M, xpos, ypos, ascii, color);
-
-		xpos = xpos - (24 * xd) - (margin * xd);
-		;
-		ypos = ypos + (16 * yd) + (margin * yd);
-		strcpy((char *)ascii, "24Dot Mincyo Font");
-		lcdDrawString(&dev, fx24M, xpos, ypos, ascii, color);
-
-		if (CONFIG_WIDTH >= 240)
-		{
-			xpos = xpos - (32 * xd) - (margin * xd);
-			;
-			ypos = ypos + (24 * yd) + (margin * yd);
-			strcpy((char *)ascii, "32Dot Mincyo Font");
-			lcdDrawString(&dev, fx32M, xpos, ypos, ascii, color);
-		}
-		lcdSetFontDirection(&dev, 0);
-		WAIT;
-
-	} // end while
-
-	// never reach
-	while (1)
-	{
-		vTaskDelay(2000 / portTICK_PERIOD_MS);
-	}
+	application();
 }
 
 void app_main(void)

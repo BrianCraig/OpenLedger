@@ -7,7 +7,16 @@
 	"settings": {
 		"files.associations": {
 			"uart.h": "c",
-			"gpio.h": "c"
-		}
+			"gpio.h": "c",
+			"task.h": "c",
+			"string": "cpp",
+			"app.h": "c",
+			"freertos.h": "c",
+			"actions.h": "c",
+			"esp_log.h": "c",
+			"some.h": "c"
+		},
+		"idf.port": "/dev/ttyUSB0",
+		"idf.adapterTargetName": "esp32"
 	}
 }
