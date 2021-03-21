@@ -1,4 +1,4 @@
-set(srcs ui.c app.c main.c some.cpp)
+set(srcs app.cpp main.c)
 idf_component_register(SRCS ${srcs} INCLUDE_DIRS ".")
 
 

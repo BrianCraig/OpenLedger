@@ -1,8 +1,7 @@
-#include "actions.h"
 #include "esp32/rom/uart.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "ui.h"
+#include "ol_ui.h"
 
 void waitMs(int ms)
 {
@@ -19,24 +18,30 @@ enum UserAction getAction()
     if (s != OK)
       continue;
     if (myChar == 'a' || myChar == 'A')
-      return No;
+      return UserAction::No;
     if (myChar == 'd' || myChar == 'D')
-      return Yes;
+      return UserAction::Yes;
     if (myChar == 'w' || myChar == 'W')
-      return Up;
+      return UserAction::Up;
     if (myChar == 's' || myChar == 'S')
-      return Down;
+      return UserAction::Down;
   }
 
   return Yes;
 }
 
-void application()
+extern "C"
 {
-  struct UI ui;
-  initUI(&ui);
-  for (;;)
+
+  void application()
   {
-    applyAction(&ui, getAction());
+    TFT_t dev;
+    spi_master_init(&dev);
+    lcdInit(&dev);
+    OlMenu *menu = new OlMenu(&dev, exampleOlMenu());
+    for (;;)
+    {
+      menu->apply(getAction());
+    }
   }
 }
