@@ -8,6 +8,12 @@ OlMenuEntry::OlMenuEntry(std::string *title)
   this->title = title;
 }
 
+OlMenuEntry::OlMenuEntry(std::string *title, OlWindowI *window)
+{
+  this->title = title;
+  this->window = window;
+}
+
 void OlMenuEntry::addEntry(OlMenuEntry *entry)
 {
   entries.push_back(entry);
@@ -34,7 +40,7 @@ OlMenuEntry *exampleOlMenu()
   base->addEntry(history);
   base->addEntry(settings);
 
-  OlMenuEntry *account_list = new OlMenuEntry(new std::string("List"));
+  OlMenuEntry *account_list = new OlMenuEntry(new std::string("List"), new OlStatusWindow());
   OlMenuEntry *account_add = new OlMenuEntry(new std::string("Add"));
   OlMenuEntry *account_info = new OlMenuEntry(new std::string("Info"));
   OlMenuEntry *account_contacts = new OlMenuEntry(new std::string("Contacts"));
@@ -59,7 +65,19 @@ OlMenu::OlMenu(TFT_t *dev, FontxFile *font, OlMenuEntry *menu)
 
 void OlMenu::apply(enum UserAction action)
 {
-  if (action == UserAction::Up)
+  if (onWindow)
+  {
+    OlWindowStage stage = (*selectedIt)->window->apply(action);
+    if (stage == OlWindowStage::Done)
+    {
+      onWindow = false;
+    }
+    else if (stage == OlWindowStage::InProgress)
+    {
+      return;
+    }
+  }
+  else if (action == UserAction::Up)
   {
     if (selectedIt != path.back()->entries.begin())
       std::advance(selectedIt, -1);
@@ -79,8 +97,18 @@ void OlMenu::apply(enum UserAction action)
   }
   else if (action == UserAction::Yes)
   {
-    path.push_back(*selectedIt);
-    selectedIt = (*selectedIt)->entries.begin();
+    if ((*selectedIt)->window)
+    {
+      onWindow = true;
+      (*selectedIt)->window->setDev(dev);
+      (*selectedIt)->window->draw();
+      return;
+    }
+    else
+    {
+      path.push_back(*selectedIt);
+      selectedIt = (*selectedIt)->entries.begin();
+    }
   }
   draw();
 }
@@ -99,4 +127,20 @@ void OlMenu::draw()
 
 OlMenu::~OlMenu()
 {
+}
+
+enum OlWindowStage OlStatusWindow::apply(enum UserAction action)
+{
+  auto stage = action == UserAction::Yes ? OlWindowStage::Done : OlWindowStage::InProgress;
+  if (stage == OlWindowStage::InProgress)
+  {
+    draw();
+  }
+  return stage;
+}
+
+void OlStatusWindow::draw()
+{
+  lcdFillScreen(dev, BLACK);
+  lcdDrawFillCircle(dev, 135 / 2, 240 / 2, 50, BLUE);
 }

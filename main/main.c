@@ -72,7 +72,7 @@ void app_main(void)
 	}
 	else
 	{
-		ESP_LOGI(TAG, "Partition size: total: %d, used: %d", total, used);
+		ESP_LOGI(TAG, "Partition size: total: %d, used: %d %d", total, used, sizeof(int));
 	}
 
 	SPIFFS_Directory("/spiffs/");

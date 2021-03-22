@@ -1,6 +1,12 @@
 #ifndef OL_UI_H_
 #define OL_UI_H_
 
+#include <string>
+#include <list>
+
+#include "st7789.h"
+#include "ol_ui.h"
+
 enum UserAction
 {
   No,
@@ -9,26 +15,34 @@ enum UserAction
   Down
 };
 
-#ifndef __cplusplus
+enum OlWindowStage
+{
+  InProgress,
+  Done
+};
 
-THIS IS A CPP LIB ILL RUIN YOUR COMPILATION LUL
+class OlWindowI
+{
+public:
+  void setDev(TFT_t *dev) { this->dev = dev; }
+  virtual ~OlWindowI() {}
+  virtual enum OlWindowStage apply(enum UserAction action) = 0;
+  virtual void draw() = 0;
 
-#endif
+protected:
+  TFT_t *dev;
+};
 
-#include <string>
-#include <list>
-
-#include "st7789.h"
-#include "ol_ui.h"
-
-    class OlMenuEntry
+class OlMenuEntry
 {
 public:
   std::list<OlMenuEntry *> entries;
   OlMenuEntry(std::string *title);
+  OlMenuEntry(std::string *title, OlWindowI *window);
   ~OlMenuEntry();
   std::string *title;
   void addEntry(OlMenuEntry *entry);
+  OlWindowI *window = NULL;
 };
 
 OlMenuEntry *exampleOlMenu();
@@ -42,10 +56,19 @@ private:
   std::list<OlMenuEntry *> path;
   std::list<OlMenuEntry *>::iterator selectedIt;
   void draw();
+  bool onWindow = false;
 
 public:
   OlMenu(TFT_t *dev, FontxFile *font, OlMenuEntry *menu);
   ~OlMenu();
   void apply(enum UserAction action);
 };
+
+class OlStatusWindow : public OlWindowI
+{
+public:
+  enum OlWindowStage apply(enum UserAction action);
+  void draw();
+};
+
 #endif // OL_UI_H_
