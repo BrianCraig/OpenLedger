@@ -24,13 +24,9 @@ enum OlWindowStage
 class OlWindowI
 {
 public:
-  void setDev(TFT_t *dev) { this->dev = dev; }
   virtual ~OlWindowI() {}
   virtual enum OlWindowStage apply(enum UserAction action) = 0;
   virtual void draw() = 0;
-
-protected:
-  TFT_t *dev;
 };
 
 class OlMenuEntry
@@ -69,6 +65,24 @@ class OlStatusWindow : public OlWindowI
 public:
   enum OlWindowStage apply(enum UserAction action);
   void draw();
+
+protected:
+  virtual std::string text() = 0;
+  virtual uint16_t color() = 0;
+};
+
+class OlSuccessWindow : public OlStatusWindow
+{
+protected:
+  virtual std::string text();
+  uint16_t color();
+};
+
+class OlErrorWindow : public OlStatusWindow
+{
+protected:
+  virtual std::string text();
+  uint16_t color();
 };
 
 #endif // OL_UI_H_

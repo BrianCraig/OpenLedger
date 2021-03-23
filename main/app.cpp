@@ -2,6 +2,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "ol_ui.h"
+#include "ol_system_status.h"
 
 void waitMs(int ms)
 {
@@ -39,6 +40,8 @@ extern "C"
     spi_master_init(&dev);
     lcdInit(&dev);
     FontxFile font;
+    olSystemStatus()->dev = &dev;
+    olSystemStatus()->font24 = &font;
     InitFontx(&font, "/spiffs/ILGH24XB.FNT");
     lcdSetFontDirection(&dev, 0);
     OlMenu *menu = new OlMenu(&dev, &font, exampleOlMenu());

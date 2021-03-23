@@ -2,6 +2,7 @@
 #include <list>
 #include "st7789.h"
 #include "ol_ui.h"
+#include "ol_system_status.h"
 
 OlMenuEntry::OlMenuEntry(std::string *title)
 {
@@ -26,31 +27,6 @@ OlMenuEntry::~OlMenuEntry()
   {
     delete entry;
   }
-}
-
-OlMenuEntry *exampleOlMenu()
-{
-  OlMenuEntry *base = new OlMenuEntry(new std::string("Base"));
-
-  OlMenuEntry *account = new OlMenuEntry(new std::string("Account"));
-  OlMenuEntry *history = new OlMenuEntry(new std::string("History"));
-  OlMenuEntry *settings = new OlMenuEntry(new std::string("Settings"));
-
-  base->addEntry(account);
-  base->addEntry(history);
-  base->addEntry(settings);
-
-  OlMenuEntry *account_list = new OlMenuEntry(new std::string("List"), new OlStatusWindow());
-  OlMenuEntry *account_add = new OlMenuEntry(new std::string("Add"));
-  OlMenuEntry *account_info = new OlMenuEntry(new std::string("Info"));
-  OlMenuEntry *account_contacts = new OlMenuEntry(new std::string("Contacts"));
-
-  account->addEntry(account_list);
-  account->addEntry(account_add);
-  account->addEntry(account_info);
-  account->addEntry(account_contacts);
-
-  return base;
 }
 
 OlMenu::OlMenu(TFT_t *dev, FontxFile *font, OlMenuEntry *menu)
@@ -100,7 +76,6 @@ void OlMenu::apply(enum UserAction action)
     if ((*selectedIt)->window)
     {
       onWindow = true;
-      (*selectedIt)->window->setDev(dev);
       (*selectedIt)->window->draw();
       return;
     }
@@ -115,12 +90,12 @@ void OlMenu::apply(enum UserAction action)
 
 void OlMenu::draw()
 {
-  lcdFillScreen(dev, BLACK);
+  lcdFillScreen(olSystemStatus()->dev, BLACK);
   int y = 20;
   for (OlMenuEntry *entry : path.back()->entries)
   {
-    lcdDrawFillCircle(dev, 20, y, 10, *selectedIt == entry ? RED : GREEN);
-    lcdDrawString(dev, font, 40, y + 12, (uint8_t *)entry->title->c_str(), WHITE);
+    lcdDrawFillCircle(olSystemStatus()->dev, 20, y, 10, *selectedIt == entry ? RED : GREEN);
+    lcdDrawString(olSystemStatus()->dev, font, 40, y + 12, (uint8_t *)entry->title->c_str(), WHITE);
     y += 30;
   }
 }
@@ -141,6 +116,27 @@ enum OlWindowStage OlStatusWindow::apply(enum UserAction action)
 
 void OlStatusWindow::draw()
 {
-  lcdFillScreen(dev, BLACK);
-  lcdDrawFillCircle(dev, 135 / 2, 240 / 2, 50, BLUE);
+  lcdFillScreen(olSystemStatus()->dev, BLACK);
+  lcdDrawString(olSystemStatus()->dev, olSystemStatus()->font24, 10, 30, (uint8_t *)text().c_str(), WHITE);
+  lcdDrawFillCircle(olSystemStatus()->dev, 135 / 2, 240 / 2, 50, color());
+}
+
+std::string OlSuccessWindow::text()
+{
+  return "Successful";
+}
+
+uint16_t OlSuccessWindow::color()
+{
+  return GREEN;
+}
+
+std::string OlErrorWindow::text()
+{
+  return "Error";
+}
+
+uint16_t OlErrorWindow::color()
+{
+  return RED;
 }
