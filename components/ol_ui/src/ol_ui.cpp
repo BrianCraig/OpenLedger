@@ -91,13 +91,18 @@ void OlMenu::apply(enum UserAction action)
 
 void OlMenu::draw()
 {
-  lcdFillScreen(olSystemStatus()->dev, BLACK);
-  int y = 20;
+  lcdFillScreen(olSystemStatus()->dev, 0xE71C);
+  int width = 135;
+  int height = 240;
+  int block = 30;
+  int spacing = 5;
+  int items = path.back()->entries.size();
+  int start = (height - (items * block) - ((items - 1) * spacing)) / 2;
   for (OlMenuEntry *entry : path.back()->entries)
   {
-    lcdDrawFillCircle(olSystemStatus()->dev, 20, y, 10, *selectedIt == entry ? RED : GREEN);
-    lcdDrawString(olSystemStatus()->dev, font, 40, y + 12, (uint8_t *)entry->title->c_str(), WHITE);
-    y += 30;
+    lcdDrawFillRect(olSystemStatus()->dev, 0, start, width, start + block, *selectedIt == entry ? WHITE : BLACK);
+    lcdDrawString(olSystemStatus()->dev, font, 20, start + 30, (uint8_t *)entry->title->c_str(), *selectedIt == entry ? BLACK : WHITE);
+    start += block + spacing;
   }
 }
 
