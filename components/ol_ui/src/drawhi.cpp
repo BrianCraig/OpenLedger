@@ -128,7 +128,7 @@ void drawHello()
 
   for (int i = 0; i < 240; i += 2)
   {
-    lcdDrawMultiPixelsWH(olSystemStatus()->dev, 0, i, 135, 2, (uint16_t *)((random) + (i * 2 * 135)));
+    lcdDrawMultiPixels(olSystemStatus()->dev, 0, i, 135, 2, (uint16_t *)((random) + (i * 2 * 135)));
   }
 
   //lcdDrawMultiPixelsWH(olSystemStatus()->dev, 0, 0, 135, 20, (uint16_t *)&random);

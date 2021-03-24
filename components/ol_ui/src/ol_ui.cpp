@@ -91,6 +91,7 @@ void OlMenu::apply(enum UserAction action)
 
 void OlMenu::draw()
 {
+  lcdStartFrame(olSystemStatus()->dev);
   lcdFillScreen(olSystemStatus()->dev, 0xE71C);
   int width = 135;
   int height = 240;
@@ -104,6 +105,7 @@ void OlMenu::draw()
     lcdDrawString(olSystemStatus()->dev, font, 20, start + 30, (uint8_t *)entry->title->c_str(), *selectedIt == entry ? BLACK : WHITE);
     start += block + spacing;
   }
+  lcdEndFrame(olSystemStatus()->dev);
 }
 
 OlMenu::~OlMenu()
@@ -122,9 +124,11 @@ enum OlWindowStage OlStatusWindow::apply(enum UserAction action)
 
 void OlStatusWindow::draw()
 {
+  lcdStartFrame(olSystemStatus()->dev);
   lcdFillScreen(olSystemStatus()->dev, BLACK);
   lcdDrawString(olSystemStatus()->dev, olSystemStatus()->font24, 10, 30, (uint8_t *)text().c_str(), WHITE);
   lcdDrawFillCircle(olSystemStatus()->dev, 135 / 2, 240 / 2, 50, color());
+  lcdEndFrame(olSystemStatus()->dev);
   //drawHello();
 }
 

@@ -38,10 +38,11 @@ extern "C"
 		int16_t _dc;
 		int16_t _bl;
 		spi_device_handle_t _SPIHandle;
+		uint16_t *_cache;
 	} TFT_t;
 
 	void spi_master_init(TFT_t *dev);
-	bool spi_master_write_byte(spi_device_handle_t SPIHandle, const uint8_t *Data, size_t DataLength);
+	bool spi_master_write_byte(spi_device_handle_t SPIHandle, uint8_t *Data, size_t DataLength);
 	bool spi_master_write_command(TFT_t *dev, uint8_t cmd);
 	bool spi_master_write_data_byte(TFT_t *dev, uint8_t data);
 	bool spi_master_write_data_word(TFT_t *dev, uint16_t data);
@@ -51,9 +52,11 @@ extern "C"
 
 	void delayMS(int ms);
 	void lcdInit(TFT_t *dev);
+	bool lcdStartFrame(TFT_t *dev);
+	bool lcdInFrame(TFT_t *dev);
+	void lcdEndFrame(TFT_t *dev);
 	void lcdDrawPixel(TFT_t *dev, uint16_t x, uint16_t y, uint16_t color);
-	void lcdDrawMultiPixels(TFT_t *dev, uint16_t x, uint16_t y, uint16_t size, uint16_t *colors);
-	void lcdDrawMultiPixelsWH(TFT_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *colors);
+	void lcdDrawMultiPixels(TFT_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *colors);
 	void lcdDrawFillRect(TFT_t *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
 	void lcdDisplayOff(TFT_t *dev);
 	void lcdDisplayOn(TFT_t *dev);
