@@ -4,12 +4,10 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_err.h"
 #include "esp_log.h"
 #include "esp_system.h"
 #include "esp_vfs.h"
 #include "esp_spiffs.h"
-#include "esp32/rom/uart.h"
 
 #include "app.h"
 
@@ -35,7 +33,7 @@ void ST7789(void *pvParameters)
 
 void app_main(void)
 {
-	ESP_LOGI(TAG, "Initializing SPIFFS");
+	ESP_LOGI(TAG, "Random 0x%08x", esp_random());
 
 	esp_vfs_spiffs_conf_t conf = {
 			.base_path = "/spiffs",

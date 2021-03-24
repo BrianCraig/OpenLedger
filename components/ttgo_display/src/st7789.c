@@ -187,15 +187,8 @@ bool spi_master_write_color(TFT_t *dev, uint16_t color, uint16_t size)
 // Add 202001
 bool spi_master_write_colors(TFT_t *dev, uint16_t *colors, uint16_t size)
 {
-	static uint8_t Byte[1024];
-	int index = 0;
-	for (int i = 0; i < size; i++)
-	{
-		Byte[index++] = (colors[i] >> 8) & 0xFF;
-		Byte[index++] = colors[i] & 0xFF;
-	}
 	gpio_set_level(dev->_dc, SPI_Data_Mode);
-	return spi_master_write_byte(dev->_SPIHandle, Byte, size * 2);
+	return spi_master_write_byte(dev->_SPIHandle, colors, size * 2);
 }
 
 void delayMS(int ms)
@@ -301,6 +294,26 @@ void lcdDrawMultiPixels(TFT_t *dev, uint16_t x, uint16_t y, uint16_t size, uint1
 	spi_master_write_addr(dev, _y1, _y2);
 	spi_master_write_command(dev, 0x2C); //	Memory Write
 	spi_master_write_colors(dev, colors, size);
+}
+
+void lcdDrawMultiPixelsWH(TFT_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *colors)
+{
+	if (x + width > dev->_width)
+		return;
+	if (y >= dev->_height)
+		return;
+
+	uint16_t _x1 = x + dev->_offsetx;
+	uint16_t _x2 = _x1 + width - 1;
+	uint16_t _y1 = y + dev->_offsety;
+	uint16_t _y2 = _y1 + height - 1;
+
+	spi_master_write_command(dev, 0x2A); // set column(x) address
+	spi_master_write_addr(dev, _x1, _x2);
+	spi_master_write_command(dev, 0x2B); // set Page(y) address
+	spi_master_write_addr(dev, _y1, _y2);
+	spi_master_write_command(dev, 0x2C); //	Memory Write
+	spi_master_write_colors(dev, colors, width * height);
 }
 
 // Draw rectangle of filling

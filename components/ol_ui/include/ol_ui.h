@@ -7,6 +7,8 @@
 #include "st7789.h"
 #include "ol_ui.h"
 
+void drawHello();
+
 enum UserAction
 {
   No,

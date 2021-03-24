@@ -119,6 +119,7 @@ void OlStatusWindow::draw()
   lcdFillScreen(olSystemStatus()->dev, BLACK);
   lcdDrawString(olSystemStatus()->dev, olSystemStatus()->font24, 10, 30, (uint8_t *)text().c_str(), WHITE);
   lcdDrawFillCircle(olSystemStatus()->dev, 135 / 2, 240 / 2, 50, color());
+  //drawHello();
 }
 
 std::string OlSuccessWindow::text()

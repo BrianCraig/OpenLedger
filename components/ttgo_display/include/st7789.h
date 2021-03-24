@@ -53,6 +53,7 @@ extern "C"
 	void lcdInit(TFT_t *dev);
 	void lcdDrawPixel(TFT_t *dev, uint16_t x, uint16_t y, uint16_t color);
 	void lcdDrawMultiPixels(TFT_t *dev, uint16_t x, uint16_t y, uint16_t size, uint16_t *colors);
+	void lcdDrawMultiPixelsWH(TFT_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *colors);
 	void lcdDrawFillRect(TFT_t *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
 	void lcdDisplayOff(TFT_t *dev);
 	void lcdDisplayOn(TFT_t *dev);
