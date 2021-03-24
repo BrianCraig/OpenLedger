@@ -2,6 +2,7 @@
 #include <list>
 #include "st7789.h"
 #include "ol_ui.h"
+#include "esp_log.h"
 #include "ol_system_status.h"
 
 OlMenuEntry::OlMenuEntry(std::string *title)
@@ -140,4 +141,109 @@ std::string OlErrorWindow::text()
 uint16_t OlErrorWindow::color()
 {
   return RED;
+}
+
+/* Base
+OlMenu::OlMenu(TFT_t *dev, FontxFile *font, OlMenuEntry *menu)
+{
+
+}
+
+enum OlWindowStage OlStatusWindow::apply(enum UserAction action)
+{
+
+}
+
+void OlMenu::draw()
+{
+
+}
+*/
+
+OlListSelect::OlListSelect(std::list<std::string> options)
+{
+  for (std::string option : options)
+  {
+    this->options.push_back(option);
+  }
+  this->selected = this->options.begin();
+}
+
+enum OlWindowStage OlListSelect::apply(enum UserAction action)
+{
+  if (action == UserAction::Up)
+  {
+    if (selected != options.begin())
+      std::advance(selected, -1);
+  }
+  else if (action == UserAction::Down)
+  {
+    if (*selected != options.back())
+      std::advance(selected, 1);
+  }
+  else if (action == UserAction::No)
+  {
+    return OlWindowStage::Canceled;
+  }
+  else if (action == UserAction::Yes)
+  {
+    return OlWindowStage::Done;
+  }
+  draw();
+  return OlWindowStage::InProgress;
+}
+
+void OlListSelect::draw()
+{
+  lcdFillScreen(olSystemStatus()->dev, BLACK);
+  int y = 20;
+  for (std::string option : options)
+  {
+    lcdDrawFillCircle(olSystemStatus()->dev, 20, y, 10, *selected == option ? RED : GREEN);
+    lcdDrawString(olSystemStatus()->dev, olSystemStatus()->font24, 40, y + 12, (uint8_t *)option.c_str(), WHITE);
+    y += 30;
+  }
+}
+
+OlStepsWindow::OlStepsWindow(std::list<OlWindowI *> steps)
+{
+  for (OlWindowI *step : steps)
+  {
+    this->steps.push_back(step);
+  }
+  this->actual = this->steps.begin();
+}
+
+enum OlWindowStage OlStepsWindow::apply(enum UserAction action)
+{
+  OlWindowStage stage = (*actual)->apply(action);
+  if (stage == OlWindowStage::Done)
+  {
+    std::advance(actual, 1);
+    if (actual == steps.end())
+    {
+      return OlWindowStage::Done;
+    }
+    else
+    {
+      (*actual)->draw();
+      return OlWindowStage::InProgress;
+    }
+  }
+  else if (stage == OlWindowStage::InProgress)
+  {
+    return OlWindowStage::InProgress;
+  }
+  assert(stage == OlWindowStage::Canceled);
+  return OlWindowStage::Done;
+}
+
+void OlStepsWindow::draw()
+{
+  ESP_LOGI(LOG_COLOR_E, "pointing: 0x%08x", (int)(*actual));
+  (*actual)->draw();
+}
+
+OlStepsWindow::~OlStepsWindow()
+{
 }

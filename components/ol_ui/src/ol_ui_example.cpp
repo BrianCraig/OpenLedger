@@ -17,11 +17,22 @@ OlMenuEntry *exampleOlMenu()
   base->addEntry(test);
 
   OlMenuEntry *account_list = new OlMenuEntry(new std::string("List"));
+
+  OlListSelect *btcEthSel = new OlListSelect({"Bitcoin", "Ethereum"});
+
+  OlStepsWindow *createSteps = new OlStepsWindow({
+      btcEthSel,
+      new OlSuccessWindow(),
+      new OlErrorWindow(),
+  });
+
+  OlMenuEntry *account_create = new OlMenuEntry(new std::string("Create"), createSteps);
   OlMenuEntry *account_add = new OlMenuEntry(new std::string("Add"));
   OlMenuEntry *account_info = new OlMenuEntry(new std::string("Info"));
   OlMenuEntry *account_contacts = new OlMenuEntry(new std::string("Contacts"));
 
   account->addEntry(account_list);
+  account->addEntry(account_create);
   account->addEntry(account_add);
   account->addEntry(account_info);
   account->addEntry(account_contacts);

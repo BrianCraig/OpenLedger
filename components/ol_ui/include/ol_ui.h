@@ -20,7 +20,8 @@ enum UserAction
 enum OlWindowStage
 {
   InProgress,
-  Done
+  Done,
+  Canceled
 };
 
 class OlWindowI
@@ -85,6 +86,31 @@ class OlErrorWindow : public OlStatusWindow
 protected:
   virtual std::string text();
   uint16_t color();
+};
+
+class OlListSelect : public OlWindowI
+{
+public:
+  OlListSelect(std::list<std::string> options);
+  enum OlWindowStage apply(enum UserAction action);
+  void draw();
+
+private:
+  std::list<std::string> options;
+  std::list<std::string>::iterator selected;
+};
+
+class OlStepsWindow : public OlWindowI
+{
+public:
+  OlStepsWindow(std::list<OlWindowI *> steps);
+  ~OlStepsWindow();
+  enum OlWindowStage apply(enum UserAction action);
+  void draw();
+
+private:
+  std::list<OlWindowI *> steps;
+  std::list<OlWindowI *>::iterator actual;
 };
 
 #endif // OL_UI_H_
