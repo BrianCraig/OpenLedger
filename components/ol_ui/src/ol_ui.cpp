@@ -5,6 +5,40 @@
 #include "esp_log.h"
 #include "ol_system_status.h"
 
+#include "mcu_fonts.h"
+#include <mcufont.h>
+
+typedef struct
+{
+  uint16_t color;
+} RenderTextState;
+
+static void pixel_callback(int16_t x, int16_t y, uint8_t count, uint8_t alpha, void *state)
+{
+  while (count--)
+  {
+    lcdDrawPixelAlpha(olSystemStatus()->dev, x, y, alpha, ((RenderTextState *)state)->color);
+    x++;
+  }
+}
+
+static uint8_t char_callback(int16_t x0, int16_t y0, mf_char character, void *state)
+{
+  return mf_render_character(&mf_rlefont_RobotoRegular32.font, x0, y0, character, &pixel_callback, state);
+}
+
+void renderText(int16_t x, int16_t y, std::string *string, uint16_t color)
+{
+  RenderTextState state;
+  state.color = color;
+  mf_render_aligned(
+      &mf_rlefont_RobotoRegular32.font,
+      x, y,
+      MF_ALIGN_LEFT,
+      string->c_str(), string->size(),
+      &char_callback, (void *)&state);
+}
+
 OlMenuEntry::OlMenuEntry(std::string *title)
 {
   this->title = title;
@@ -102,7 +136,7 @@ void OlMenu::draw()
   for (OlMenuEntry *entry : path.back()->entries)
   {
     lcdDrawFillRect(olSystemStatus()->dev, 0, start, width, start + block, *selectedIt == entry ? WHITE : BLACK);
-    lcdDrawString(olSystemStatus()->dev, font, 20, start + 30, (uint8_t *)entry->title->c_str(), *selectedIt == entry ? BLACK : WHITE);
+    renderText(5, start - 4, entry->title, *selectedIt == entry ? BLACK : WHITE);
     start += block + spacing;
   }
   lcdEndFrame(olSystemStatus()->dev);

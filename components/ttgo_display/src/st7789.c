@@ -295,6 +295,11 @@ bool lcdInFrame(TFT_t *dev)
 	return dev->_cache != NULL;
 }
 
+uint16_t lcdInFramePixel(TFT_t *dev, uint16_t x, uint16_t y)
+{
+	return dev->_cache[x + dev->_width * y];
+}
+
 /*
 	Draws the cache and clears it if exists.
 */
@@ -316,6 +321,35 @@ void _lcdDrawInFramePixel(TFT_t *dev, uint16_t x, uint16_t y, uint16_t color)
 {
 	if ((x < dev->_width) && (y < dev->_height))
 		dev->_cache[x + (dev->_width * y)] = color;
+}
+
+#define MASK_RB 63519				// 0b1111100000011111
+#define MASK_G 2016					// 0b0000011111100000
+#define MASK_MUL_RB 4065216 // 0b1111100000011111000000
+#define MASK_MUL_G 129024		// 0b0000011111100000000000
+#define MAX_ALPHA 64				// 6bits+1 with rounding
+
+uint16_t alphablend(uint16_t fg, uint16_t bg, uint8_t alpha)
+{
+
+	// alpha for foreground multiplication
+	// convert from 8bit to (6bit+1) with rounding
+	// will be in [0..64] inclusive
+	alpha = (alpha + 2) >> 2;
+	// "beta" for background multiplication; (6bit+1);
+	// will be in [0..64] inclusive
+	uint8_t beta = MAX_ALPHA - alpha;
+	// so (0..64)*alpha + (0..64)*beta always in 0..64
+
+	return (uint16_t)((
+												((alpha * (uint32_t)(fg & MASK_RB) + beta * (uint32_t)(bg & MASK_RB)) & MASK_MUL_RB) |
+												((alpha * (fg & MASK_G) + beta * (bg & MASK_G)) & MASK_MUL_G)) >>
+										6);
+}
+
+void lcdDrawPixelAlpha(TFT_t *dev, uint16_t x, uint16_t y, uint8_t alpha, uint16_t color)
+{
+	_lcdDrawInFramePixel(dev, x, y, alphablend(color, lcdInFramePixel(dev, x, y), alpha));
 }
 
 void lcdDrawPixel(TFT_t *dev, uint16_t x, uint16_t y, uint16_t color)

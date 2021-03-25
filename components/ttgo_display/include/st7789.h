@@ -56,6 +56,7 @@ extern "C"
 	bool lcdInFrame(TFT_t *dev);
 	void lcdEndFrame(TFT_t *dev);
 	void lcdDrawPixel(TFT_t *dev, uint16_t x, uint16_t y, uint16_t color);
+	void lcdDrawPixelAlpha(TFT_t *dev, uint16_t x, uint16_t y, uint8_t alpha, uint16_t color);
 	void lcdDrawMultiPixels(TFT_t *dev, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *colors);
 	void lcdDrawFillRect(TFT_t *dev, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
 	void lcdDisplayOff(TFT_t *dev);
