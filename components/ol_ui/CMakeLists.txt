@@ -1,4 +1,4 @@
-set(srcs "src/ol_ui.cpp" "src/ol_ui_example.cpp" "src/drawhi.cpp" "src/ol_text.cpp")
+set(srcs "src/ol_ui.cpp" "src/ol_ui_example.cpp" "src/ol_text.cpp")
 
 set(include_dirs "include")
 

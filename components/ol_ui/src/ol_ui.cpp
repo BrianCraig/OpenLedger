@@ -31,10 +31,8 @@ OlMenuEntry::~OlMenuEntry()
   }
 }
 
-OlMenu::OlMenu(TFT_t *dev, FontxFile *font, OlMenuEntry *menu)
+OlMenu::OlMenu(OlMenuEntry *menu)
 {
-  this->dev = dev;
-  this->font = font;
   this->menu = menu;
   this->selectedIt = menu->entries.begin();
   path.push_back(menu);
@@ -125,12 +123,12 @@ enum OlWindowStage OlStatusWindow::apply(enum UserAction action)
 
 void OlStatusWindow::draw()
 {
+  std::string titletext = text();
   lcdStartFrame(olSystemStatus()->dev);
-  lcdFillScreen(olSystemStatus()->dev, BLACK);
-  lcdDrawString(olSystemStatus()->dev, olSystemStatus()->font24, 10, 30, (uint8_t *)text().c_str(), WHITE);
+  lcdFillScreen(olSystemStatus()->dev, WHITE);
+  renderText(olSystemStatus()->dev->_width / 2, 10, MF_ALIGN_CENTER, &titletext, BLACK, Roboto20);
   lcdDrawFillCircle(olSystemStatus()->dev, 135 / 2, 240 / 2, 50, color());
   lcdEndFrame(olSystemStatus()->dev);
-  //drawHello();
 }
 
 std::string OlSuccessWindow::text()
@@ -205,14 +203,21 @@ enum OlWindowStage OlListSelect::apply(enum UserAction action)
 
 void OlListSelect::draw()
 {
-  lcdFillScreen(olSystemStatus()->dev, BLACK);
-  int y = 20;
+  lcdStartFrame(olSystemStatus()->dev);
+  lcdFillScreen(olSystemStatus()->dev, 0xE71C);
+  int width = 135;
+  int height = 240;
+  int block = 30;
+  int spacing = 5;
+  int items = options.size();
+  int start = (height - (items * block) - ((items - 1) * spacing)) / 2;
   for (std::string option : options)
   {
-    lcdDrawFillCircle(olSystemStatus()->dev, 20, y, 10, *selected == option ? RED : GREEN);
-    lcdDrawString(olSystemStatus()->dev, olSystemStatus()->font24, 40, y + 12, (uint8_t *)option.c_str(), WHITE);
-    y += 30;
+    lcdDrawFillRect(olSystemStatus()->dev, 0, start, width, start + block, *selected == option ? WHITE : BLACK);
+    renderText(olSystemStatus()->dev->_width / 2, start - 4, MF_ALIGN_CENTER, &option, *selected == option ? BLACK : WHITE, Roboto32);
+    start += block + spacing;
   }
+  lcdEndFrame(olSystemStatus()->dev);
 }
 
 OlStepsWindow::OlStepsWindow(std::list<OlWindowI *> steps)

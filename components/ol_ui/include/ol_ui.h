@@ -7,8 +7,6 @@
 #include "st7789.h"
 #include "ol_ui.h"
 
-void drawHello();
-
 enum UserAction
 {
   No,
@@ -49,8 +47,6 @@ OlMenuEntry *exampleOlMenu();
 class OlMenu
 {
 private:
-  TFT_t *dev;
-  FontxFile *font;
   OlMenuEntry *menu;
   std::list<OlMenuEntry *> path;
   std::list<OlMenuEntry *>::iterator selectedIt;
@@ -58,7 +54,7 @@ private:
   bool onWindow = false;
 
 public:
-  OlMenu(TFT_t *dev, FontxFile *font, OlMenuEntry *menu);
+  OlMenu(OlMenuEntry *menu);
   ~OlMenu();
   void apply(enum UserAction action);
 };
