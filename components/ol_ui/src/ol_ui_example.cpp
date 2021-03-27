@@ -1,6 +1,7 @@
 #include <string>
 #include <list>
 #include "ol_ui.h"
+#include "_ol_layout.h"
 
 OlMenuEntry *exampleOlMenu()
 {
@@ -39,8 +40,10 @@ OlMenuEntry *exampleOlMenu()
 
   OlMenuEntry *successExample = new OlMenuEntry(new std::string("Success"), new OlSuccessWindow());
   OlMenuEntry *errorExample = new OlMenuEntry(new std::string("Error"), new OlErrorWindow());
+  OlMenuEntry *incomingTransaction = new OlMenuEntry(new std::string("Error"), new OlIncomingTransactionWindow());
   test->addEntry(successExample);
   test->addEntry(errorExample);
+  test->addEntry(incomingTransaction);
 
   return base;
 }

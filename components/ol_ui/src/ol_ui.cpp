@@ -5,6 +5,7 @@
 #include "esp_log.h"
 #include "ol_system_status.h"
 #include "ol_text.h"
+#include "_ol_layout.h"
 
 OlMenuEntry::OlMenuEntry(std::string *title)
 {
@@ -149,6 +150,25 @@ std::string OlErrorWindow::text()
 uint16_t OlErrorWindow::color()
 {
   return RED;
+}
+
+OlWindowStage OlIncomingTransactionWindow::apply(enum UserAction action)
+{
+  auto stage = action == UserAction::Yes ? OlWindowStage::Done : OlWindowStage::InProgress;
+  if (stage == OlWindowStage::InProgress)
+  {
+    draw();
+  }
+  return stage;
+}
+
+void OlIncomingTransactionWindow::draw()
+{
+
+  OlLayout(
+      {new OlText("Incoming Transaction", OlTextSize::S20, 2),
+       new OlText("37.12mEth", OlTextSize::S20, 1),
+       new OlText("Deny, Open", OlTextSize::S20, 2)});
 }
 
 /* Base

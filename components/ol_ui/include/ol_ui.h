@@ -84,6 +84,13 @@ protected:
   uint16_t color();
 };
 
+class OlIncomingTransactionWindow : public OlWindowI
+{
+public:
+  enum OlWindowStage apply(enum UserAction action);
+  void draw();
+};
+
 class OlListSelect : public OlWindowI
 {
 public:
