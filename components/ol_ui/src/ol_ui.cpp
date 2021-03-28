@@ -166,8 +166,8 @@ void OlIncomingTransactionWindow::draw()
 {
 
   OlLayout(
-      {new OlText("Incoming Transaction", OlTextSize::S20, 2),
-       new OlText("37.12mEth", OlTextSize::S20, 1),
+      {(new OlText("Incoming Transaction", OlTextSize::S20, 2))->withBackground(WHITE),
+       (new OlText("37.12mEth", OlTextSize::S20, 1))->withBackground(WHITE),
        new OlText("Deny, Open", OlTextSize::S20, 2)});
 }
 

@@ -20,15 +20,34 @@ OlText *OlText::withBackground(uint16_t color)
 
 int OlText::height()
 {
-  return 30;
+  return -1 + (23 * lines);
+}
+
+typedef struct
+{
+  int y;
+  const mf_font_s *font;
+} LineState;
+
+bool drawLine(mf_str text, uint16_t count, void *state)
+{
+  LineState *lineState = (LineState *)state;
+  std::string *stdText = new std::string(text, count);
+  renderText(olSystemStatus()->dev->_width / 2, lineState->y, MF_ALIGN_CENTER, stdText, BLACK, lineState->font);
+  delete (stdText);
+  lineState->y += 23;
+  return true;
 }
 
 void OlText::render(int y)
 {
   uint16_t width = olSystemStatus()->dev->_width;
+  LineState state;
+  state.y = y;
+  state.font = size == OlTextSize::S32 ? Roboto32 : Roboto20;
   if (hasBackground)
     lcdDrawFillRect(olSystemStatus()->dev, 0, y, width, y + height(), background);
-  renderText(width / 2, y - 4, MF_ALIGN_CENTER, &text, BLACK, size == OlTextSize::S32 ? Roboto32 : Roboto20);
+  mf_wordwrap(state.font, width, text.c_str(), &drawLine, &state);
 }
 
 void OlLayout(std::list<OlLayoutWithHeight *> elements)
