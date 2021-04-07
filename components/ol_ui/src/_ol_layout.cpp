@@ -18,9 +18,23 @@ OlText *OlText::withBackground(uint16_t color)
   return this;
 }
 
+OlText *OlText::fromTo(int from, int to)
+{
+  //this->hasBackground = true;
+  //this->background = color;
+  return this;
+}
+
+OlText *OlText::align(enum mf_align_t align)
+{
+  //this->hasBackground = true;
+  //this->background = color;
+  return this;
+}
+
 int OlText::height()
 {
-  return -1 + (23 * lines);
+  return (23 * lines);
 }
 
 typedef struct
@@ -68,4 +82,33 @@ void OlLayout(std::list<OlLayoutWithHeight *> elements)
   }
 
   lcdEndFrame(olSystemStatus()->dev);
+}
+
+OlLine::OlLine(std::list<OlLayoutWithHeight *> elements)
+{
+  this->elements = elements;
+}
+
+OlLine *OlLine::withBackground(uint16_t color)
+{
+  this->hasBackground = true;
+  this->background = color;
+  return this;
+}
+
+int OlLine::height()
+{
+  std::list<int> heights;
+  std::transform(elements.begin(), elements.end(), heights.begin(), [](OlLayoutWithHeight *element) -> int { return element->height(); });
+  return *std::max_element(heights.begin(), heights.end());
+}
+
+void OlLine::render(int y)
+{
+  if (hasBackground)
+    lcdDrawFillRect(olSystemStatus()->dev, 0, y, olSystemStatus()->dev->_width, y + height(), background);
+  for (auto element : elements)
+  {
+    element->render(y);
+  }
 }

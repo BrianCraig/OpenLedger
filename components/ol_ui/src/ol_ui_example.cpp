@@ -41,9 +41,11 @@ OlMenuEntry *exampleOlMenu()
   OlMenuEntry *successExample = new OlMenuEntry(new std::string("Success"), new OlSuccessWindow());
   OlMenuEntry *errorExample = new OlMenuEntry(new std::string("Error"), new OlErrorWindow());
   OlMenuEntry *incomingTransaction = new OlMenuEntry(new std::string("Incoming"), new OlIncomingTransactionWindow());
+  OlMenuEntry *transactionInfo = new OlMenuEntry(new std::string("T Info"), new OlTransactionInfoWindow());
   test->addEntry(successExample);
   test->addEntry(errorExample);
   test->addEntry(incomingTransaction);
+  test->addEntry(transactionInfo);
 
   return base;
 }

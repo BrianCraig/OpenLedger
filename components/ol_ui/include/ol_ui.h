@@ -91,6 +91,13 @@ public:
   void draw();
 };
 
+class OlTransactionInfoWindow : public OlWindowI
+{
+public:
+  enum OlWindowStage apply(enum UserAction action);
+  void draw();
+};
+
 class OlListSelect : public OlWindowI
 {
 public:

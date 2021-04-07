@@ -164,11 +164,37 @@ OlWindowStage OlIncomingTransactionWindow::apply(enum UserAction action)
 
 void OlIncomingTransactionWindow::draw()
 {
-
   OlLayout(
-      {(new OlText("Incoming Transaction", OlTextSize::S20, 2))->withBackground(WHITE),
-       (new OlText("37.12mEth", OlTextSize::S20, 1))->withBackground(WHITE),
-       new OlText("Deny, Open", OlTextSize::S20, 2)});
+      {OlText{"Incoming Transaction", OlTextSize::S20, 2}.withBackground(WHITE),
+       OlText{"37.12mEth", OlTextSize::S20, 1}.withBackground(WHITE),
+       OlText{"Deny, Open", OlTextSize::S20, 1}.withBackground(WHITE)});
+}
+
+OlWindowStage OlTransactionInfoWindow::apply(enum UserAction action)
+{
+  if (action == UserAction::Yes)
+  {
+    return OlWindowStage::Done;
+  }
+  else if (action == UserAction::No)
+  {
+    return OlWindowStage::Canceled;
+  }
+
+  draw();
+  return OlWindowStage::InProgress;
+}
+
+void OlTransactionInfoWindow::draw()
+{
+  OlLayout(
+      {OlLine{{OlText{"Alice", OlTextSize::S20, 1}.fromTo(34, olSystemStatus()->dev->_width)->align(MF_ALIGN_LEFT)}}.withBackground(WHITE),
+       OlLine{{OlText{"0x", OlTextSize::S20, 1}.fromTo(0, 32)->align(MF_ALIGN_RIGHT),
+               OlText{"45a3 6a8e 118c 37e4 c47e f4ab 827a 7c9e 579e 11e2", OlTextSize::S20, 5}.fromTo(34, olSystemStatus()->dev->_width)->align(MF_ALIGN_LEFT)}}
+           .withBackground(WHITE),
+       OlLine{{OlText{"Eth", OlTextSize::S20, 1}.fromTo(0, 32)->align(MF_ALIGN_RIGHT),
+               OlText{"3.24mEth", OlTextSize::S20, 1}.fromTo(34, olSystemStatus()->dev->_width)->align(MF_ALIGN_LEFT)}}
+           .withBackground(WHITE)});
 }
 
 /* Base
@@ -179,7 +205,6 @@ OlMenu::OlMenu(TFT_t *dev, FontxFile *font, OlMenuEntry *menu)
 
 enum OlWindowStage OlStatusWindow::apply(enum UserAction action)
 {
-
 }
 
 void OlMenu::draw()
