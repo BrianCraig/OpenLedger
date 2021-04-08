@@ -4,6 +4,7 @@
 #include <list>
 #include <string>
 #include "ol_text.h"
+#include "st7789.h"
 
 class OlLayoutWithHeight
 {
@@ -40,14 +41,21 @@ public:
   OlText *withBackground(uint16_t color);
   OlText *fromTo(int from, int to);
   OlText *align(enum mf_align_t align);
+  OlText *color(uint16_t color);
+  const mf_font_s *font();
+  int x();
   void render(int y);
   int height();
+  int from = 0, to;
+  uint16_t _color = BLACK;
+  enum mf_align_t _align = mf_align_t::MF_ALIGN_CENTER;
+  enum OlTextSize size;
+  int y;
 
 private:
   bool hasBackground = false;
   uint16_t background;
   std::string text;
-  enum OlTextSize size;
   int lines;
 };
 

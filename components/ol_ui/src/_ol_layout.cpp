@@ -9,6 +9,7 @@ OlText::OlText(std::string text, enum OlTextSize size, int lines)
   this->text = text;
   this->size = size;
   this->lines = lines;
+  this->to = olSystemStatus()->dev->_width;
 }
 
 OlText *OlText::withBackground(uint16_t color)
@@ -20,15 +21,21 @@ OlText *OlText::withBackground(uint16_t color)
 
 OlText *OlText::fromTo(int from, int to)
 {
-  //this->hasBackground = true;
-  //this->background = color;
+
+  this->from = from;
+  this->to = to;
   return this;
 }
 
 OlText *OlText::align(enum mf_align_t align)
 {
-  //this->hasBackground = true;
-  //this->background = color;
+  this->_align = align;
+  return this;
+}
+
+OlText *OlText::color(uint16_t color)
+{
+  this->_color = color;
   return this;
 }
 
@@ -45,23 +52,31 @@ typedef struct
 
 bool drawLine(mf_str text, uint16_t count, void *state)
 {
-  LineState *lineState = (LineState *)state;
+  OlText *olText = (OlText *)state;
   std::string *stdText = new std::string(text, count);
-  renderText(olSystemStatus()->dev->_width / 2, lineState->y, MF_ALIGN_CENTER, stdText, BLACK, lineState->font);
+  renderText(olText->x(), olText->y, olText->_align, stdText, olText->_color, olText->font());
   delete (stdText);
-  lineState->y += 23;
+  olText->y += 23;
   return true;
+}
+
+int OlText::x()
+{
+  return _align == MF_ALIGN_LEFT ? from : (_align == MF_ALIGN_RIGHT ? to : ((to - from) / 2));
+}
+
+const mf_font_s *OlText::font()
+{
+  return size == OlTextSize::S32 ? Roboto32 : Roboto20;
 }
 
 void OlText::render(int y)
 {
   uint16_t width = olSystemStatus()->dev->_width;
-  LineState state;
-  state.y = y;
-  state.font = size == OlTextSize::S32 ? Roboto32 : Roboto20;
+  this->y = y;
   if (hasBackground)
     lcdDrawFillRect(olSystemStatus()->dev, 0, y, width, y + height(), background);
-  mf_wordwrap(state.font, width, text.c_str(), &drawLine, &state);
+  mf_wordwrap(font(), to - from, text.c_str(), &drawLine, this);
 }
 
 void OlLayout(std::list<OlLayoutWithHeight *> elements)

@@ -297,6 +297,8 @@ bool lcdInFrame(TFT_t *dev)
 
 uint16_t lcdInFramePixel(TFT_t *dev, uint16_t x, uint16_t y)
 {
+	if ((x >= dev->_width) || (y >= dev->_height))
+		return BLACK;
 	return dev->_cache[x + dev->_width * y];
 }
 
