@@ -41,7 +41,7 @@ OlText *OlText::color(uint16_t color)
 
 int OlText::height()
 {
-  return (23 * lines);
+  return (font()->line_height * lines);
 }
 
 typedef struct
@@ -77,6 +77,30 @@ void OlText::render(int y)
   if (hasBackground)
     lcdDrawFillRect(olSystemStatus()->dev, 0, y, width, y + height(), background);
   mf_wordwrap(font(), to - from, text.c_str(), &drawLine, this);
+}
+
+OlIcon::OlIcon(uint16_t code, const mf_font_s *font, int x, int y)
+{
+  this->code = code;
+  this->font = font;
+  this->x = x;
+  this->y = y;
+}
+
+OlIcon *OlIcon::color(uint16_t color)
+{
+  this->_color = color;
+  return this;
+}
+
+void OlIcon::render(int y)
+{
+  renderRleCharacter(font, code, x, this->y + y, _color);
+}
+
+int OlIcon::height()
+{
+  return 0;
 }
 
 void OlLayout(std::list<OlLayoutWithHeight *> elements)

@@ -59,6 +59,19 @@ private:
   int lines;
 };
 
+class OlIcon : public OlLayoutWithHeight
+{
+public:
+  OlIcon(uint16_t code, const mf_font_s *font, int x, int y);
+  OlIcon *color(uint16_t color);
+  const mf_font_s *font;
+  uint16_t code;
+  void render(int y);
+  int height();
+  uint16_t _color = BLACK;
+  int x, y;
+};
+
 void OlLayout(std::list<OlLayoutWithHeight *> elements);
 
 #endif // _OL_LAYOUT_H_

@@ -192,7 +192,7 @@ void OlTransactionInfoWindow::draw()
        OlLine{{OlText{"0x", OlTextSize::S20, 1}.fromTo(0, 32)->align(MF_ALIGN_RIGHT)->color(GRAY),
                OlText{"45a3 6a8e 118c 37e4 c47e f4ab 827a 7c9e 579e 11e2", OlTextSize::S20, 5}.fromTo(34, olSystemStatus()->dev->_width)->align(MF_ALIGN_LEFT)}}
            .withBackground(WHITE),
-       OlLine{{OlText{"Eth", OlTextSize::S20, 1}.fromTo(0, 32)->align(MF_ALIGN_RIGHT),
+       OlLine{{OlIcon{FaIconEth, FaBrand26, 8, -2}.color(BLUE),
                OlText{"3.24mEth", OlTextSize::S20, 1}.fromTo(34, olSystemStatus()->dev->_width)->align(MF_ALIGN_LEFT)}}
            .withBackground(WHITE)});
 }

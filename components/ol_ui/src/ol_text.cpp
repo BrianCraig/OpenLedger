@@ -12,6 +12,13 @@ static void pixel_callback(int16_t x, int16_t y, uint8_t count, uint8_t alpha, v
   }
 }
 
+void renderRleCharacter(const mf_font_s *font, uint16_t unicode, int16_t x, int16_t y, uint16_t color)
+{
+  RenderTextState state;
+  state.color = color;
+  mf_rlefont_render_character(font, x, y, unicode, &pixel_callback, &state);
+}
+
 static uint8_t char_callback(int16_t x0, int16_t y0, mf_char character, void *state)
 {
   return mf_render_character(((RenderTextState *)state)->font, x0, y0, character, &pixel_callback, state);
