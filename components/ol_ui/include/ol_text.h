@@ -8,9 +8,13 @@
 #define Roboto20 &mf_rlefont_RobotoRegular20.font
 #define Roboto32 &mf_rlefont_RobotoRegular32.font
 #define FaBrand26 &mf_rlefont_fabrands26.font
+#define FaSolid26 &mf_rlefont_fasolid26.font
 
 #define FaIconEth 0xf42e
 #define FaIconBtc 0xf379
+#define FaIconCheck 0xf00c
+#define FaIconTimes 0xf00d
+#define FaIconIdCard 0xf2c2
 
 #ifdef __cplusplus
 extern "C"

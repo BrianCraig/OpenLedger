@@ -4,5 +4,6 @@
 #include "RobotoRegular20.c"
 #include "RobotoRegular32.c"
 #include "fabrands26.c"
+#include "fasolid26.c"
 
 #endif
