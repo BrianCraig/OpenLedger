@@ -1,5 +1,6 @@
 #include <string>
 #include <list>
+#include <vector>
 #include "st7789.h"
 #include "ol_ui.h"
 #include "esp_log.h"
@@ -214,6 +215,108 @@ void OlMenu::draw()
 
 }
 */
+
+static std::list<char> characters = {
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+};
+
+OlInputWindow::OlInputWindow(std::string title, int length)
+{
+  this->title = title;
+  this->length = length;
+  this->character = characters.begin();
+}
+
+enum OlWindowStage OlInputWindow::apply(enum UserAction action)
+{
+  if (action == UserAction::Yes)
+  {
+    if (character == characters.end())
+    {
+      return OlWindowStage::Done;
+    }
+    input.append(std::string{*character});
+    if (input.length() == length)
+    {
+      return OlWindowStage::Done;
+    }
+  }
+  else if (action == UserAction::No)
+  {
+    return OlWindowStage::Canceled;
+  }
+  else if (action == UserAction::Up)
+  {
+    std::advance(character, 1);
+  }
+  else if (action == UserAction::Down)
+  {
+    std::advance(character, -1);
+  }
+
+  draw();
+  return OlWindowStage::InProgress;
+}
+
+std::string charItAsText(std::list<char>::iterator charIt)
+{
+  if (charIt == characters.end())
+  {
+    return "End";
+  }
+  return std::string{*charIt};
+}
+
+void OlInputWindow::draw()
+{
+  OlText dots = OlText{input, OlTextSize::S20, 1},
+         spacing = OlText{"", OlTextSize::S32, 1},
+         topChar = OlText{charItAsText(std::next(character)), OlTextSize::S20, 1},
+         actualChar = OlText{charItAsText(character), OlTextSize::S32, 1},
+         bottomChar = OlText{charItAsText(std::prev(character)), OlTextSize::S20, 1};
+  OlLayout(
+      {OlText{title, OlTextSize::S20, 1}.withBackground(WHITE),
+       &dots,
+       &spacing,
+       &topChar,
+       &actualChar,
+       &bottomChar});
+}
 
 OlListSelect::OlListSelect(std::list<std::string> options)
 {

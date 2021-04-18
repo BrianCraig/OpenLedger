@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 #include "st7789.h"
 #include "ol_ui.h"
@@ -68,6 +69,19 @@ public:
 protected:
   virtual std::string text() = 0;
   virtual uint16_t color() = 0;
+};
+
+class OlInputWindow : public OlWindowI
+{
+public:
+  OlInputWindow(std::string title, int length);
+  enum OlWindowStage apply(enum UserAction action);
+  void draw();
+
+private:
+  std::string title, input = "";
+  int length;
+  std::list<char>::iterator character;
 };
 
 class OlSuccessWindow : public OlStatusWindow
