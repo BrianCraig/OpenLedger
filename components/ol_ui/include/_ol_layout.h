@@ -72,6 +72,16 @@ public:
   int x, y;
 };
 
+class OlCircle : public OlLayoutWithHeight
+{
+public:
+  OlCircle(int x, int y, int radius, uint16_t color);
+  void render(int y);
+  int height();
+  uint16_t color;
+  int x, y, radius;
+};
+
 void OlLayout(std::list<OlLayoutWithHeight *> elements);
 
 #endif // _OL_LAYOUT_H_

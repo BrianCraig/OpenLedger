@@ -39,7 +39,9 @@ OlMenuEntry *exampleOlMenu()
   account->addEntry(account_contacts);
 
   OlMenuEntry *successExample = new OlMenuEntry(new std::string("Success"), new OlSuccessWindow());
-  OlMenuEntry *errorExample = new OlMenuEntry(new std::string("Error"), new OlErrorWindow());
+  OlErrorWindow *errorWindowWithText = new OlErrorWindow();
+  errorWindowWithText->withInfo("Incorrect wallet key");
+  OlMenuEntry *errorExample = new OlMenuEntry(new std::string("Error"), errorWindowWithText);
   OlMenuEntry *incomingTransaction = new OlMenuEntry(new std::string("Incoming"), new OlIncomingTransactionWindow());
   OlMenuEntry *transactionInfo = new OlMenuEntry(new std::string("T Info"), new OlTransactionInfoWindow());
   OlMenuEntry *input = new OlMenuEntry(new std::string("Input"), new OlInputWindow("Define Alias", 8));
@@ -48,7 +50,6 @@ OlMenuEntry *exampleOlMenu()
   test->addEntry(incomingTransaction);
   test->addEntry(transactionInfo);
   test->addEntry(input);
-
 
   return base;
 }

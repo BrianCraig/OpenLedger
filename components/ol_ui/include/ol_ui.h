@@ -7,6 +7,7 @@
 
 #include "st7789.h"
 #include "ol_ui.h"
+#include "_ol_layout.h"
 
 enum UserAction
 {
@@ -65,10 +66,15 @@ class OlStatusWindow : public OlWindowI
 public:
   enum OlWindowStage apply(enum UserAction action);
   void draw();
+  void withInfo(std::string info);
 
 protected:
   virtual std::string text() = 0;
-  virtual uint16_t color() = 0;
+  virtual OlIcon *icon() = 0;
+
+private:
+  std::string info;
+  bool _withInfo = false;
 };
 
 class OlInputWindow : public OlWindowI
@@ -88,14 +94,14 @@ class OlSuccessWindow : public OlStatusWindow
 {
 protected:
   virtual std::string text();
-  uint16_t color();
+  OlIcon *icon();
 };
 
 class OlErrorWindow : public OlStatusWindow
 {
 protected:
   virtual std::string text();
-  uint16_t color();
+  OlIcon *icon();
 };
 
 class OlIncomingTransactionWindow : public OlWindowI

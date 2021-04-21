@@ -138,7 +138,7 @@ OlLine *OlLine::withBackground(uint16_t color)
 int OlLine::height()
 {
   std::list<int> heights;
-  std::transform(elements.begin(), elements.end(), heights.begin(), [](OlLayoutWithHeight *element) -> int { return element->height(); });
+  std::transform(elements.begin(), elements.end(), std::back_inserter(heights), [](OlLayoutWithHeight *element) -> int { return element->height(); });
   return *std::max_element(heights.begin(), heights.end());
 }
 
@@ -150,4 +150,20 @@ void OlLine::render(int y)
   {
     element->render(y);
   }
+}
+
+OlCircle::OlCircle(int x, int y, int radius, uint16_t color)
+{
+  this->x = x;
+  this->y = y;
+  this->radius = radius;
+  this->color = color;
+}
+void OlCircle::render(int y)
+{
+  lcdDrawFillCircle(olSystemStatus()->dev, x, this->y + y + radius, radius, color);
+}
+int OlCircle::height()
+{
+  return (radius * 2) + y;
 }

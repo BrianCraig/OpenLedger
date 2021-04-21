@@ -125,22 +125,35 @@ enum OlWindowStage OlStatusWindow::apply(enum UserAction action)
 
 void OlStatusWindow::draw()
 {
-  std::string titletext = text();
-  lcdStartFrame(olSystemStatus()->dev);
-  lcdFillScreen(olSystemStatus()->dev, WHITE);
-  renderText(olSystemStatus()->dev->_width / 2, 10, MF_ALIGN_CENTER, &titletext, BLACK, Roboto20);
-  lcdDrawFillCircle(olSystemStatus()->dev, 135 / 2, 240 / 2, 50, color());
-  lcdEndFrame(olSystemStatus()->dev);
+  OlCircle circle = OlCircle{olSystemStatus()->dev->_width / 2, 0, 30, 0xCE59};
+  OlIcon *icon = this->icon();
+  OlLine circleWithIcon = OlLine{{&circle,
+                                  icon}};
+  std::list<OlLayoutWithHeight *> items = {OlText{text(), OlTextSize::S20, 1}.withBackground(WHITE),
+                                           &circleWithIcon};
+  OlText infoText = OlText{info, OlTextSize::S20, 2};
+  if (_withInfo)
+  {
+    items.push_back(&infoText);
+  }
+  OlLayout(items);
+  delete icon;
+}
+
+void OlStatusWindow::withInfo(std::string info)
+{
+  this->info = info;
+  this->_withInfo = true;
 }
 
 std::string OlSuccessWindow::text()
 {
-  return "Successful";
+  return "Success";
 }
 
-uint16_t OlSuccessWindow::color()
+OlIcon *OlSuccessWindow::icon()
 {
-  return GREEN;
+  return (new OlIcon(FaIconCheck, FaSolid26, (olSystemStatus()->dev->_width / 2) - 13, 18))->color(0x0461);
 }
 
 std::string OlErrorWindow::text()
@@ -148,9 +161,9 @@ std::string OlErrorWindow::text()
   return "Error";
 }
 
-uint16_t OlErrorWindow::color()
+OlIcon *OlErrorWindow::icon()
 {
-  return RED;
+  return (new OlIcon(FaIconTimes, FaSolid26, (olSystemStatus()->dev->_width / 2) - 9, 18))->color(0xF800);
 }
 
 OlWindowStage OlIncomingTransactionWindow::apply(enum UserAction action)
