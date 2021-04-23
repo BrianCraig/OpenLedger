@@ -136,7 +136,7 @@ void OlStatusWindow::draw()
   {
     items.push_back(&infoText);
   }
-  OlLayout(items);
+  OlLayout(items, 15);
   delete icon;
 }
 
@@ -181,7 +181,8 @@ void OlIncomingTransactionWindow::draw()
   OlLayout(
       {OlText{"Incoming Transaction", OlTextSize::S20, 2}.withBackground(WHITE),
        OlText{"37.12mEth", OlTextSize::S20, 1}.withBackground(WHITE),
-       OlText{"Deny, Open", OlTextSize::S20, 1}.withBackground(WHITE)});
+       OlText{"Deny, Open", OlTextSize::S20, 1}.withBackground(WHITE)},
+      15);
 }
 
 OlWindowStage OlTransactionInfoWindow::apply(enum UserAction action)
@@ -202,15 +203,18 @@ OlWindowStage OlTransactionInfoWindow::apply(enum UserAction action)
 void OlTransactionInfoWindow::draw()
 {
   OlLayout(
-      {OlLine{{OlIcon{FaIconIdCard, FaSolid26, 1, -2}.color(BLUE),
+      {OlLine{{OlIcon{FaIconIdCard, FaSolid26, 1, 0}.color(BLUE),
                OlText{"Alice", OlTextSize::S20, 1}.fromTo(34, olSystemStatus()->dev->_width)->align(MF_ALIGN_LEFT)}}
-           .withBackground(WHITE),
+           .withBackground(WHITE)
+           ->withPadding(2),
        OlLine{{OlText{"0x", OlTextSize::S20, 1}.fromTo(0, 32)->align(MF_ALIGN_RIGHT)->color(GRAY),
                OlText{"45a3 6a8e 118c 37e4 c47e f4ab 827a 7c9e 579e 11e2", OlTextSize::S20, 5}.fromTo(34, olSystemStatus()->dev->_width)->align(MF_ALIGN_LEFT)}}
            .withBackground(WHITE),
-       OlLine{{OlIcon{FaIconEth, FaBrand26, 8, -2}.color(BLUE),
+       OlLine{{OlIcon{FaIconEth, FaBrand26, 8, 0}.color(BLUE),
                OlText{"3.24mEth", OlTextSize::S20, 1}.fromTo(34, olSystemStatus()->dev->_width)->align(MF_ALIGN_LEFT)}}
-           .withBackground(WHITE)});
+           .withBackground(WHITE)
+           ->withPadding(2)},
+      15);
 }
 
 /* Base

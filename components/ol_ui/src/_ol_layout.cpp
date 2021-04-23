@@ -103,13 +103,12 @@ int OlIcon::height()
   return 0;
 }
 
-void OlLayout(std::list<OlLayoutWithHeight *> elements)
+void OlLayout(std::list<OlLayoutWithHeight *> elements, int spacing)
 {
   lcdStartFrame(olSystemStatus()->dev);
   lcdFillScreen(olSystemStatus()->dev, 0xE71C);
 
   int items = elements.size();
-  int spacing = 5;
   int height = olSystemStatus()->dev->_height;
   auto unary_op = [](int add, OlLayoutWithHeight *elem) { return add + elem->height(); };
   int total = std::accumulate(elements.begin(), elements.end(), 0, unary_op);
@@ -139,7 +138,7 @@ int OlLine::height()
 {
   std::list<int> heights;
   std::transform(elements.begin(), elements.end(), std::back_inserter(heights), [](OlLayoutWithHeight *element) -> int { return element->height(); });
-  return *std::max_element(heights.begin(), heights.end());
+  return *std::max_element(heights.begin(), heights.end()) + (_padding * 2);
 }
 
 void OlLine::render(int y)
@@ -148,8 +147,14 @@ void OlLine::render(int y)
     lcdDrawFillRect(olSystemStatus()->dev, 0, y, olSystemStatus()->dev->_width, y + height(), background);
   for (auto element : elements)
   {
-    element->render(y);
+    element->render(y + _padding);
   }
+}
+
+OlLine *OlLine::withPadding(int padding)
+{
+  _padding = padding;
+  return this;
 }
 
 OlCircle::OlCircle(int x, int y, int radius, uint16_t color)

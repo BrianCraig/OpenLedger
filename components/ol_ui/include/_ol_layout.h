@@ -27,10 +27,12 @@ public:
   OlLine *withBackground(uint16_t color);
   void render(int y);
   int height();
+  OlLine *withPadding(int padding);
 
 private:
   bool hasBackground = false;
   uint16_t background;
+  int _padding = 0;
   std::list<OlLayoutWithHeight *> elements;
 };
 
@@ -82,6 +84,6 @@ public:
   int x, y, radius;
 };
 
-void OlLayout(std::list<OlLayoutWithHeight *> elements);
+void OlLayout(std::list<OlLayoutWithHeight *> elements, int spacing = 5);
 
 #endif // _OL_LAYOUT_H_
