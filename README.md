@@ -42,10 +42,12 @@ This will need defining a Protocol for communication, and forking a known app, a
 
 ## External Resources
 
-[View the current design on Figma
+[
+  View the current design on Figma  
 ![](https://i.ibb.co/T2v88vD/Screenshot-from-2021-04-29-07-18-56.png)
 ](https://www.figma.com/file/7RKOkGecLLjVIPMaE8YdY0/OpenLedger?node-id=199%3A326)  
   
-[Implementation running @ 199ce52 video
+[
+  Implementation running @ 199ce52 video  
 ![](https://i.ibb.co/44bS8yQ/Screenshot-from-2021-04-29-07-54-31.png)
 ](https://streamable.com/g96dd5)  
