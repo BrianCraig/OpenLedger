@@ -187,7 +187,7 @@ bool spi_master_write_color(TFT_t *dev, uint16_t color, uint16_t size)
 {
 	wtfShiftBytes(&color, 1);
 	gpio_set_level(dev->_dc, SPI_Data_Mode);
-	return spi_master_write_byte(dev->_SPIHandle, &color, size * 2);
+	return spi_master_write_byte(dev->_SPIHandle, (uint8_t *)&color, size * 2);
 }
 
 // Add 202001
