@@ -13,15 +13,25 @@ OlMenuEntry::OlMenuEntry(std::string *title)
   this->title = title;
 }
 
-OlMenuEntry::OlMenuEntry(std::string *title, OlWindowI *window)
+OlMenuEntry::OlMenuEntry(std::string *title, OlWindowICallback callback)
 {
   this->title = title;
-  this->window = window;
+  this->callback = callback;
 }
 
 void OlMenuEntry::addEntry(OlMenuEntry *entry)
 {
   entries.push_back(entry);
+}
+
+void OlMenuEntry::initializeWindow()
+{
+  this->window = this->callback();
+}
+
+void OlMenuEntry::deleteWindow()
+{
+  delete this->window;
 }
 
 OlMenuEntry::~OlMenuEntry()
@@ -46,8 +56,9 @@ void OlMenu::apply(enum UserAction action)
   if (onWindow)
   {
     OlWindowStage stage = (*selectedIt)->window->apply(action);
-    if (stage == OlWindowStage::Done)
+    if (stage == OlWindowStage::Done || stage == OlWindowStage::Canceled)
     {
+      (*selectedIt)->deleteWindow();
       onWindow = false;
     }
     else if (stage == OlWindowStage::InProgress)
@@ -75,9 +86,10 @@ void OlMenu::apply(enum UserAction action)
   }
   else if (action == UserAction::Yes)
   {
-    if ((*selectedIt)->window)
+    if ((*selectedIt)->callback)
     {
       onWindow = true;
+      (*selectedIt)->initializeWindow();
       (*selectedIt)->window->draw();
       return;
     }

@@ -3,6 +3,43 @@
 #include "ol_ui.h"
 #include "_ol_layout.h"
 
+OlWindowI *createSteps()
+{
+  OlListSelect *btcEthSel = new OlListSelect({"Bitcoin", "Ethereum"});
+  return new OlStepsWindow({
+      btcEthSel,
+      new OlSuccessWindow(),
+      new OlErrorWindow(),
+  });
+};
+
+OlWindowI *successExample()
+{
+  return new OlSuccessWindow();
+}
+
+OlWindowI *errorExample()
+{
+  OlErrorWindow *errorWindowWithText = new OlErrorWindow();
+  errorWindowWithText->withInfo("Incorrect wallet key");
+  return errorWindowWithText;
+}
+
+OlWindowI *incomingTransactionExample()
+{
+  return new OlIncomingTransactionWindow();
+}
+
+OlWindowI *transactionInfoExample()
+{
+  return new OlTransactionInfoWindow();
+}
+
+OlWindowI *inputExample()
+{
+  return new OlInputWindow("Define Alias", 8);
+}
+
 OlMenuEntry *exampleOlMenu()
 {
   OlMenuEntry *base = new OlMenuEntry(new std::string("Base"));
@@ -19,15 +56,7 @@ OlMenuEntry *exampleOlMenu()
 
   OlMenuEntry *account_list = new OlMenuEntry(new std::string("List"));
 
-  OlListSelect *btcEthSel = new OlListSelect({"Bitcoin", "Ethereum"});
-
-  OlStepsWindow *createSteps = new OlStepsWindow({
-      btcEthSel,
-      new OlSuccessWindow(),
-      new OlErrorWindow(),
-  });
-
-  OlMenuEntry *account_create = new OlMenuEntry(new std::string("Create"), createSteps);
+  OlMenuEntry *account_create = new OlMenuEntry(new std::string("Create"), &createSteps);
   OlMenuEntry *account_add = new OlMenuEntry(new std::string("Add"));
   OlMenuEntry *account_info = new OlMenuEntry(new std::string("Info"));
   OlMenuEntry *account_contacts = new OlMenuEntry(new std::string("Contacts"));
@@ -38,15 +67,14 @@ OlMenuEntry *exampleOlMenu()
   account->addEntry(account_info);
   account->addEntry(account_contacts);
 
-  OlMenuEntry *successExample = new OlMenuEntry(new std::string("Success"), new OlSuccessWindow());
-  OlErrorWindow *errorWindowWithText = new OlErrorWindow();
-  errorWindowWithText->withInfo("Incorrect wallet key");
-  OlMenuEntry *errorExample = new OlMenuEntry(new std::string("Error"), errorWindowWithText);
-  OlMenuEntry *incomingTransaction = new OlMenuEntry(new std::string("Incoming"), new OlIncomingTransactionWindow());
-  OlMenuEntry *transactionInfo = new OlMenuEntry(new std::string("T Info"), new OlTransactionInfoWindow());
-  OlMenuEntry *input = new OlMenuEntry(new std::string("Input"), new OlInputWindow("Define Alias", 8));
-  test->addEntry(successExample);
-  test->addEntry(errorExample);
+  OlMenuEntry *successExampleWindow = new OlMenuEntry(new std::string("Success"), &successExample);
+
+  OlMenuEntry *errorExampleWindow = new OlMenuEntry(new std::string("Error"), &errorExample);
+  OlMenuEntry *incomingTransaction = new OlMenuEntry(new std::string("Incoming"), incomingTransactionExample);
+  OlMenuEntry *transactionInfo = new OlMenuEntry(new std::string("T Info"), transactionInfoExample);
+  OlMenuEntry *input = new OlMenuEntry(new std::string("Input"), inputExample);
+  test->addEntry(successExampleWindow);
+  test->addEntry(errorExampleWindow);
   test->addEntry(incomingTransaction);
   test->addEntry(transactionInfo);
   test->addEntry(input);

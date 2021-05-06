@@ -32,16 +32,21 @@ public:
   virtual void draw() = 0;
 };
 
+typedef OlWindowI *(*OlWindowICallback)();
+
 class OlMenuEntry
 {
 public:
   std::list<OlMenuEntry *> entries;
   OlMenuEntry(std::string *title);
-  OlMenuEntry(std::string *title, OlWindowI *window);
+  OlMenuEntry(std::string *title, OlWindowICallback callback);
   ~OlMenuEntry();
   std::string *title;
   void addEntry(OlMenuEntry *entry);
-  OlWindowI *window = NULL;
+  void initializeWindow();
+  void deleteWindow();
+  OlWindowICallback callback = nullptr;
+  OlWindowI *window = nullptr;
 };
 
 OlMenuEntry *exampleOlMenu();
