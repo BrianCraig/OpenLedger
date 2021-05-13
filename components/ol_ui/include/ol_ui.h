@@ -9,33 +9,35 @@
 #include "ol_ui.h"
 #include "_ol_layout.h"
 
-enum UserAction
-{
+enum UserAction {
   No,
   Yes,
   Up,
   Down
 };
 
-enum OlWindowStage
-{
+enum OlWindowStage {
   InProgress,
   Done,
   Canceled
 };
 
-class OlWindowI
-{
+class OlWindowI {
 public:
   virtual ~OlWindowI() {}
+
   virtual enum OlWindowStage apply(enum UserAction action) = 0;
   virtual void draw() = 0;
 };
 
+class OlWindowStepsI {
+public:
+  std::list<OlWindowI *> steps;
+};
+
 typedef OlWindowI *(*OlWindowICallback)();
 
-class OlMenuEntry
-{
+class OlMenuEntry {
 public:
   std::list<OlMenuEntry *> entries;
   OlMenuEntry(std::string *title);
@@ -51,8 +53,7 @@ public:
 
 OlMenuEntry *exampleOlMenu();
 
-class OlMenu
-{
+class OlMenu {
 private:
   OlMenuEntry *menu;
   std::list<OlMenuEntry *> path;
@@ -66,8 +67,7 @@ public:
   void apply(enum UserAction action);
 };
 
-class OlStatusWindow : public OlWindowI
-{
+class OlStatusWindow : public OlWindowI {
 public:
   enum OlWindowStage apply(enum UserAction action);
   void draw();
@@ -82,8 +82,7 @@ private:
   bool _withInfo = false;
 };
 
-class OlInputWindow : public OlWindowI
-{
+class OlInputWindow : public OlWindowI {
 public:
   OlInputWindow(std::string title, int length);
   enum OlWindowStage apply(enum UserAction action);
@@ -95,36 +94,31 @@ private:
   std::list<char>::iterator character;
 };
 
-class OlSuccessWindow : public OlStatusWindow
-{
+class OlSuccessWindow : public OlStatusWindow {
 protected:
   virtual std::string text();
   OlIcon *icon();
 };
 
-class OlErrorWindow : public OlStatusWindow
-{
+class OlErrorWindow : public OlStatusWindow {
 protected:
   virtual std::string text();
   OlIcon *icon();
 };
 
-class OlIncomingTransactionWindow : public OlWindowI
-{
+class OlIncomingTransactionWindow : public OlWindowI {
 public:
   enum OlWindowStage apply(enum UserAction action);
   void draw();
 };
 
-class OlTransactionInfoWindow : public OlWindowI
-{
+class OlTransactionInfoWindow : public OlWindowI {
 public:
   enum OlWindowStage apply(enum UserAction action);
   void draw();
 };
 
-class OlListSelect : public OlWindowI
-{
+class OlListSelect : public OlWindowI {
 public:
   OlListSelect(std::list<std::string> options);
   enum OlWindowStage apply(enum UserAction action);
@@ -135,17 +129,23 @@ private:
   std::list<std::string>::iterator selected;
 };
 
-class OlStepsWindow : public OlWindowI
-{
+typedef OlWindowI *(*OlStepsCallback)(OlWindowStepsI *);
+
+class OlStepsWindow : public OlWindowI, public OlWindowStepsI {
 public:
-  OlStepsWindow(std::list<OlWindowI *> steps);
-  ~OlStepsWindow();
+  std::list<OlWindowI *> steps;
+private:
+  OlStepsCallback callback;
+public:
+  OlStepsWindow(std::list<OlWindowI *> steps, OlStepsCallback callback);
+
   enum OlWindowStage apply(enum UserAction action);
   void draw();
 
 private:
-  std::list<OlWindowI *> steps;
   std::list<OlWindowI *>::iterator actual;
+  OlWindowI *finalStep = nullptr;
+  bool isFinalStep();
 };
 
 #endif // OL_UI_H_
