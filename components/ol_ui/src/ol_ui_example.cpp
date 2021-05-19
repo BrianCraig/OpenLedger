@@ -1,22 +1,25 @@
 #include <string>
-#include "esp_system.h"
 #include "ol_ui.h"
 
-OlWindowI *callbackDecider(OlWindowStepsI *steps) {
-  if (esp_random() < 2147483647) {
+OlWindowI *callbackDecider(OlWindowStepsI *wind) {
+  assert(wind->getSteps().size() == 2);
+  std::string key = reinterpret_cast<OlInputWindow *>(*std::next(wind->getSteps().begin()))->input;
+  if (key == std::string("AAA")) {
     return new OlSuccessWindow();
   } else {
-    return new OlErrorWindow();
+    auto errWin = new OlErrorWindow();
+    errWin->withInfo("Incorrect wallet key");
+    return errWin;
   }
 }
 
 OlWindowI *createSteps() {
   auto *alias = new OlInputWindow("Define Alias", 10);
+  auto *wk = new OlInputWindow("Wallet key", 10);
   return new OlStepsWindow(
     {
       alias,
-      new OlSuccessWindow(),
-      new OlErrorWindow(),
+      wk,
     }, &callbackDecider);
 }
 

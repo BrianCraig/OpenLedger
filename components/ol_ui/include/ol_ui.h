@@ -32,7 +32,7 @@ public:
 
 class OlWindowStepsI {
 public:
-  std::list<OlWindowI *> steps;
+  virtual std::list<OlWindowI *> getSteps() = 0;
 };
 
 typedef OlWindowI *(*OlWindowICallback)();
@@ -87,9 +87,10 @@ public:
   OlInputWindow(std::string title, int length);
   enum OlWindowStage apply(enum UserAction action);
   void draw();
+  std::string input = "";
 
 private:
-  std::string title, input = "";
+  std::string title;
   int length;
   std::list<char>::iterator character;
 };
@@ -132,13 +133,13 @@ private:
 typedef OlWindowI *(*OlStepsCallback)(OlWindowStepsI *);
 
 class OlStepsWindow : public OlWindowI, public OlWindowStepsI {
-public:
-  std::list<OlWindowI *> steps;
 private:
+  std::list<OlWindowI *> steps;
   OlStepsCallback callback;
 public:
   OlStepsWindow(std::list<OlWindowI *> steps, OlStepsCallback callback);
 
+  std::list<OlWindowI *> getSteps();
   enum OlWindowStage apply(enum UserAction action);
   void draw();
 

@@ -367,3 +367,7 @@ OlStepsWindow::OlStepsWindow(std::list<OlWindowI *> s, OlStepsCallback c) : step
 bool OlStepsWindow::isFinalStep() {
   return finalStep != nullptr;
 }
+
+std::list<OlWindowI *> OlStepsWindow::getSteps() {
+  return steps;
+}
