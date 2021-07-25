@@ -7,6 +7,8 @@
 #include "ol_text.h"
 #include "_ol_layout.h"
 
+const uint16_t MenuNotSelectedFontColor = 0x4208;
+
 OlMenuEntry::OlMenuEntry(std::string *title) {
   this->title = title;
 }
@@ -86,9 +88,9 @@ void OlMenu::draw() {
   int items = path.back()->entries.size();
   int start = (height - (items * block) - ((items - 1) * spacing)) / 2;
   for (OlMenuEntry *entry : path.back()->entries) {
-    lcdDrawFillRect(olSystemStatus()->dev, 0, start, width, start + block, *selectedIt == entry ? WHITE : BLACK);
+    lcdDrawFillRect(olSystemStatus()->dev, 0, start, width, start + block, *selectedIt == entry ? WHITE : 0xE71C);
     renderText(olSystemStatus()->dev->_width / 2, start - 4, MF_ALIGN_CENTER, entry->title,
-               *selectedIt == entry ? BLACK : WHITE, Roboto32);
+               *selectedIt == entry ? BLACK : MenuNotSelectedFontColor, Roboto32);
     start += block + spacing;
   }
   lcdEndFrame(olSystemStatus()->dev);
@@ -323,9 +325,11 @@ void OlListSelect::draw() {
   int items = options.size();
   int start = (height - (items * block) - ((items - 1) * spacing)) / 2;
   for (std::string option : options) {
-    lcdDrawFillRect(olSystemStatus()->dev, 0, start, width, start + block, *selected == option ? WHITE : BLACK);
+    if (*selected == option) {
+      lcdDrawFillRect(olSystemStatus()->dev, 0, start, width, start + block, WHITE);
+    }
     renderText(olSystemStatus()->dev->_width / 2, start - 4, MF_ALIGN_CENTER, &option,
-               *selected == option ? BLACK : WHITE, Roboto32);
+               *selected == option ? BLACK : MenuNotSelectedFontColor, Roboto32);
     start += block + spacing;
   }
   lcdEndFrame(olSystemStatus()->dev);
