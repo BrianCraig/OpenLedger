@@ -119,17 +119,6 @@ public:
   void draw();
 };
 
-class OlListSelect : public OlWindowI {
-public:
-  OlListSelect(std::list<std::string> options);
-  enum OlWindowStage apply(enum UserAction action);
-  void draw();
-
-private:
-  std::list<std::string> options;
-  std::list<std::string>::iterator selected;
-};
-
 typedef OlWindowI *(*OlStepsCallback)(OlWindowStepsI *);
 
 class OlStepsWindow : public OlWindowI, public OlWindowStepsI {

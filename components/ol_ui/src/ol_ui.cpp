@@ -292,49 +292,6 @@ void OlInputWindow::draw() {
      &bottomChar});
 }
 
-OlListSelect::OlListSelect(std::list<std::string> options) {
-  for (std::string option : options) {
-    this->options.push_back(option);
-  }
-  this->selected = this->options.begin();
-}
-
-enum OlWindowStage OlListSelect::apply(enum UserAction action) {
-  if (action == UserAction::Up) {
-    if (selected != options.begin())
-      std::advance(selected, -1);
-  } else if (action == UserAction::Down) {
-    if (*selected != options.back())
-      std::advance(selected, 1);
-  } else if (action == UserAction::No) {
-    return OlWindowStage::Canceled;
-  } else if (action == UserAction::Yes) {
-    return OlWindowStage::Done;
-  }
-  draw();
-  return OlWindowStage::InProgress;
-}
-
-void OlListSelect::draw() {
-  lcdStartFrame(olSystemStatus()->dev);
-  lcdFillScreen(olSystemStatus()->dev, 0xE71C);
-  int width = 135;
-  int height = 240;
-  int block = 30;
-  int spacing = 5;
-  int items = options.size();
-  int start = (height - (items * block) - ((items - 1) * spacing)) / 2;
-  for (std::string option : options) {
-    if (*selected == option) {
-      lcdDrawFillRect(olSystemStatus()->dev, 0, start, width, start + block, WHITE);
-    }
-    renderText(olSystemStatus()->dev->_width / 2, start - 4, MF_ALIGN_CENTER, &option,
-               *selected == option ? BLACK : MenuNotSelectedFontColor, Roboto32);
-    start += block + spacing;
-  }
-  lcdEndFrame(olSystemStatus()->dev);
-}
-
 enum OlWindowStage OlStepsWindow::apply(enum UserAction action) {
   OlWindowStage stage = isFinalStep() ? finalStep->apply(action) : (*actual)->apply(action);
   if (isFinalStep()) {
