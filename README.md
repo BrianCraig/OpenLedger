@@ -50,4 +50,4 @@ This will need defining a Protocol for communication, and forking a known app, a
 [
   Implementation running @ 199ce52 video  
 ![](https://i.ibb.co/44bS8yQ/Screenshot-from-2021-04-29-07-54-31.png)
-](https://streamable.com/g96dd5)  
+](https://streamable.com/mn65zb)  
